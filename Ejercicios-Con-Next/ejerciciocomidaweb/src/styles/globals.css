@@ -1,0 +1,24 @@
+div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.enlacesPrincipales {
+  display: flex;
+  justify-content: space-between;
+  align-self: auto;
+  background-color: #ffffff;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.centrarBuscar {
+  display: flex;
+  justify-content: center;
+}

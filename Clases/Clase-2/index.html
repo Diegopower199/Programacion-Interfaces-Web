@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="./style.css">
+        <title>Mi segunda pagina</title>
+
+        <script lang="javascript">
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key == 's' || event.key == 'S') {
+                    console.log("You have just pressed S");
+                    moveDown();
+                }
+            
+            }, false);
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key == 'w' || event.key == 'W') {
+                    console.log("You have just pressed w");
+                    moveUp();
+                }
+            
+            }, false);
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key == 'a' || event.key == 'A') {
+                    console.log("You have just pressed A");
+                    moveLeft();
+                }
+            
+            }, false);
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key == 'd' || event.key == 'D') {
+                    console.log("You have just pressed D");
+                    moveRight();
+                }
+            
+            }, false);
+
+            function saluda() {
+                window.alert("Hola")
+            }
+
+            function changeButton2 () {
+                var button2 = document.getElementById("button2");
+                button2.innerText = "Pulsado";
+                button2.style.background = "#ff00aa"
+                button2.style.position = "absolute";
+                button2.style.top = "200px";
+
+                console.log("Ancho: ", screen.width, "\nAlto: ", screen.height)
+            }
+
+            function moveDown() {
+                var pelota = document.getElementById("pelota");
+                var top = parseInt(pelota.style.top) || 2; // EL 2 es si no esta definida el pelota.style.top pon valor 2right
+                console.log(screen.height, "    ", pelota.style.top)
+                if (pelota.style.top !== screen.height) {
+                    pelota.style.top = (top + 50) + "px";
+                }
+            }
+
+            function moveUp() {
+                var pelota = document.getElementById("pelota");
+                var top = parseInt(pelota.style.top) ; // EL 2 es si no esta definida el pelota.style.top pon valor 2keyup
+                console.log(pelota.style.top);
+                if (top !== 0 ) {
+                    pelota.style.top = (top - 50) + "px";
+                }
+            }
+
+            function moveRight() {
+                var pelota = document.getElementById("pelota");
+                var left = parseInt(pelota.style.left) || 0 ; // EL 2 es si no esta definida el pelota.style.top pon valor 2
+                console.log(pelota.style.left);
+                if (pelota.style.left !== screen.width) {
+                    pelota.style.left = (left + 50) + "px";
+                }
+            }
+
+            function moveLeft() {
+                var pelota = document.getElementById("pelota");
+                var left = parseInt(pelota.style.left) || 0; // EL 2 es si no esta definida el pelota.style.top pon valor 2
+                if (left !== 0) {
+                    pelota.style.left = (left - 50) + "px";
+                }
+            }
+            
+
+            function move() {
+                var pelota = document.getElementById("pelota");
+                var top = parseInt(pelota.style.top) || 2; // EL 2 es si no esta definida el pelota.style.top pon valor 2
+                pelota.style.top = (2 + top) + "px";
+                setTimeout(move, 50);
+            }
+        </script>
+    </head>
+    <body>
+        <div class="circulo" id="pelota"></div>
+
+        <div></div>
+        <button id="button1" onclick="changeButton2()">Clickame</button>
+        <button id="button2" onclick="move()">Soy otro boton</button>
+        
+    </body>
+</html>

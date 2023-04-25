@@ -1,0 +1,74 @@
+body {
+    width: 100%;
+    overflow: hidden;
+    background:url("Imagenes/fondoEspacio.png");
+    background-size: cover;
+}
+
+.mensaje {
+    color: #ffffff;
+    text-align:center;
+
+}
+
+#pantallaSpaceInvaders {
+    width: 500px;
+    height: 500px;
+    background-color: black;
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    
+}
+
+.navesEnemigas {
+    position: absolute;
+    top: 0px;
+    width: 50px;
+    height: 50px;
+    background:url("Imagenes/enemigo1.png");
+    background-size:contain;
+    background-repeat: no-repeat;
+}
+
+#naveEspacial {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    background:url("Imagenes/naveEspacial.png"); 
+    background-size:contain;
+    background-repeat: no-repeat;
+    left: 50%;
+    bottom: 40px;
+}
+
+.balas {
+    position: absolute;
+    bottom: 80px;
+    left: 51%;
+    width: 30px;
+    height: 30px;
+    background:url("Imagenes/bala.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.marcador {
+    position: absolute;
+    border: 10px solid red;
+    left: 250px;
+}
+
+.vidas {
+    position: absolute;
+    color: #ffffff;
+    bottom: 0px;
+    left: 0px;
+}
+
+#score {
+    position: absolute;
+    bottom: 0px;
+    left: 370px;
+    color: #ffffff;
+}

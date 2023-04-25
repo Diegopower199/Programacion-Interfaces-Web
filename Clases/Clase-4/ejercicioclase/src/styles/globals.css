@@ -1,0 +1,20 @@
+body {
+  background-color: rgb(red, green, blue);
+}
+
+.nombres {
+  display: flex;
+  justify-content: space-around;
+}
+
+.botones {
+  font-size: 40px;
+  color: red;
+}
+
+p {
+  display: flex;
+  justify-content: center;
+  background-color: green;
+  font: 150% sans-serif;;
+}
