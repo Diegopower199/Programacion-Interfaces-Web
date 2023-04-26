@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client"
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 
 const Character: FC<{id: string}> = ({id}) => {
 
@@ -11,22 +11,35 @@ const Character: FC<{id: string}> = ({id}) => {
         }
     `
 
-    const {loading, error, data} = useQuery<{
+    const [charID, setCharID] = useState<string>(id);
+
+    const {loading, error, data, refetch} = useQuery<{
         character: {
             name: string
+            
         }
     }>(query, {
         variables: {
-            id
+            id: charID
         }
-    })
+    });
+
+    useEffect( () => {
+        refetch({
+            variables: {
+                id: charID
+            }
+        })
+    }, [charID])
 
     if (loading) return <div>Loading...</div>
     if (error) return <div>Upps. La vida es dura</div>
     return (
-        <div>
+        <>
             {data!.character.name}
-        </div>
+            <input type={"text"} onChange={(e) => setCharID(e.target.value)}/>
+            {charID}
+        </>
     )
 }
 

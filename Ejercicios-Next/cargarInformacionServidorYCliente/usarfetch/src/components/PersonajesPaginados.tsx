@@ -17,7 +17,7 @@ const PersonajesPaginados = () => {
 
     const fetchData = async () => {
         try {
-            const chars = await fetch(`https://rickandmortyapi.com/api/character/?page=${page}&name=${name}`);
+            const chars = await fetch(`https://rickandmortyapi.com/api/character/?page=${page}`);
             const json = await chars.json();
 
             //const names = json.results.map( (char: any) => char.name)

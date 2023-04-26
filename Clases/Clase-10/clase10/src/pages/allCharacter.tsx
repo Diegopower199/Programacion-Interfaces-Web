@@ -2,6 +2,8 @@ import { gql } from "@apollo/client";
 import getApolloCLient from "@/libs/client";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 
+
+// AQUI DEBO PONER GETSTATICPROPS
 export const getStaticProps: GetStaticPaths = async () => {
     const client = getApolloCLient();
     const { data } = await client.query({

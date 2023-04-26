@@ -3,11 +3,7 @@ import styled from "styled-components";
 import Link from "next/link";
 import { CharactersAPI } from "@/type";
 
-type serrverSideProps = {
-    params : {
-        id: string,
-    }
-}
+
 
 
 export const getServerSideProps = async () => {
@@ -31,7 +27,6 @@ export const getServerSideProps = async () => {
       console.log(error);
     }
 
-    console.log("Props: ", props)
     return {
       props: {
         data: props,
@@ -45,14 +40,14 @@ type CharType = {
     image: string,
 }
 
-const PersonajesPaginados = (props: CharType[]) => {
+const PersonajesPaginados = (props: CharType) => {
     const [dataCharacter, setDataCharacter] = useState<CharType[]>([]);
     const [name, setName] = useState<string>("");
     const [page, setPage] = useState<number>(1);
     const [botonPrevous, setBotonPrevous] = useState<boolean>(false);
     const [botonNext, setBotonNext] = useState<boolean>(true);
-    
-/*
+
+
 
     useEffect ( () => {
         
@@ -77,25 +72,17 @@ const PersonajesPaginados = (props: CharType[]) => {
 
 
 
-
-
-    */
-
-    if(true) {
-        return (
-            <>
-            
-            </>
-        )
+    if (dataCharacter.length === 0) {
+        return <>Loading data</>
     }
+
+    
 
 
     return (
         <>
 
-        <TituloH1>PERSONAJES RICK Y MORTY {}</TituloH1>
-
-        
+        <TituloH1>PERSONAJES RICK Y MORTY {props.id}</TituloH1>
 
         <DivPersonajes>
         {dataCharacter.map(item => {
@@ -160,7 +147,6 @@ const PersonajesPaginados = (props: CharType[]) => {
 
         <p>ESTADO botonPrevous: {botonPrevous ? "True" : "False"}</p>
         <p>ESTADO botonNext: {botonNext ? "True" : "False"}</p>
-        
         
 
         </>
