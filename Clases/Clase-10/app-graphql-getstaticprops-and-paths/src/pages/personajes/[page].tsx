@@ -1,18 +1,140 @@
-import { CharacterAPI } from "@/type";
-import Link from "next/link";
+import { CharacterAPI, CharactersAPI, Info } from "@/type";
+import type { GetServerSideProps, GetServerSidePropsContext, GetStaticPaths, GetStaticProps } from "next";
+import getApolloClient from "@/libs/client";
+import {gql} from "@apollo/client"
 import styled from "styled-components";
+import Link from "next/link";
+import { useState } from "react";
 
-let page = 0;
 
-const CharactersList = ({ data }: CharacterAPI) => {
+export const getStaticPaths: GetStaticPaths = async () => {
+
+  const client = getApolloClient();
+  const {data}  = await client.query({
+    query: gql`
+    query {
+      characters{ 
+        info {
+          count
+        }
+      }
+    }
+    `,
+  });
+
+  console.log("Toda la informacion en getStaticPaths: ", Math.ceil((data.characters.info.count) / 20))
+
+  let paginas: { params: { page: string } }[] = []
+
+  for (let numeroPagina = 1; numeroPagina <=  Math.ceil((data.characters.info.count) / 20) ; numeroPagina++) {
+    paginas.push({params: {page: `${numeroPagina}`}})
+  };
+
+  /*paginas.forEach( (valor) => {
+    console.log(valor);
+  })
+
+  console.log(paginas.length, "ANTES HAY VALORES\n\n\n\n");*/
+
+  
+
+
+  const a = [ { params: {page: '1'}}]
+
+    return {
+        paths: paginas, 
+        fallback: false
+    }
+}
+
+
+export const getStaticProps: GetStaticProps = async (context) => {
+
+    const page = context?.params?.page;
+
+    console.log("Informacion context.query: ", context?.params?.page)
+    const query = gql`
+    query{
+      characters (page: ${page}){ 
+        results{
+          id
+          name
+          image
+        }
+        info {
+          count
+          next
+          prev
+        }
+      }
+    }
+  `
+
+  const client = getApolloClient();
+
+  const { data } = await client.query<{
+    characters: {
+      results: {
+        id: string,
+        name: string,
+        status: string,
+        species: string,
+        type: string,
+        gender: string,
+        origin:  { name: string; url: string },
+        location:  { name: string; url: string },
+        image: string,
+        episode: string[],
+        url: string,
+        created: string,
+      }[],
+      info: {
+        count: number,
+        next: string,
+        prev: string,
+      }
+
+    }
+  }>({
+    query,
+    variables: {
+      page
+    }
+  })
+  
+
+  console.log("Informacion: ", data);
+  
+  
+
+  return {
+    props: {
+      results: data.characters.results,
+      info: data.characters.info
+    },
+  };
+};
+
+
+
+
+
+const CharactersList = (props : {results: CharacterAPI[], info:Info}) => {
+
+  
+  
+  let datoPagina = 1;
+
   return (
     <div>
       <h1>Characters Lists</h1>
 
+      
+
       <DivPersonajes>
-        {data.map(
+        
+        {props.results.map(
           (character) => (
-            (page = character.page),
             (
               <DivPersonajeUnicoLink>
                 
@@ -34,39 +156,13 @@ const CharactersList = ({ data }: CharacterAPI) => {
       </DivPersonajes>
       
       <BotonPaginas>
-        <DivClickPaginas botonPaginaValida={page !== 1}>
-          <Link style={links} href={`/personajes/${page - 1}`}>Anterior</Link>
+        <DivClickPaginas botonPaginaValida={datoPagina !== 1}>
+          <Link style={links} href={`/personajes/${datoPagina - 1}`}>Anterior</Link>
         </DivClickPaginas>
-        <DivClickPaginas botonPaginaValida={page !== 6}>
-          <Link style={links} href={`/personajes/${page + 1}`}>Siguiente</Link>
+        <DivClickPaginas botonPaginaValida={datoPagina !== 6}>
+          <Link style={links} href={`/personajes/${datoPagina + 1}`}>Siguiente</Link>
         </DivClickPaginas>
       </BotonPaginas>
-
-      <BotonPaginas>
-        <BotonClick
-          botonPaginaValida={page !== 1}
-          onClick={() => {
-            console.log("hola");
-            <Link href={`/personajes/${page - 1}`}>Anterior</Link>;
-            //location.replace(`/informacion/planets/${page - 1}`);
-            // Poner que paginaInvalida que debo poner BotonNextOrPrevous true
-          }}
-        >
-          Anterior Pagina
-        </BotonClick>
-
-        <BotonClick
-          botonPaginaValida={page !== 6}
-          onClick={() => {
-            location.replace(`/personajes/${page + 1}`);
-            window.scroll(0, 0);
-          }}
-        >
-          Siguiente Pagina
-        </BotonClick>
-      </BotonPaginas>
-
-      <Link style={links} href={`/personajes/${page - 1}`}>Anterior</Link>
     </div>
   );
 };
@@ -75,7 +171,7 @@ export default CharactersList;
 
 const links: React.CSSProperties = {
   textDecoration: "none",
-  color: "white"
+  color: "red"
 }
 
 const DivPersonajes = styled.div`

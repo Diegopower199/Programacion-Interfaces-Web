@@ -1,4 +1,4 @@
-import { CharacterAPI, CharactersAPI } from "@/type";
+import { CharacterAPI, CharactersAPI, Info } from "@/type";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import getApolloClient from "@/libs/client";
 import {gql} from "@apollo/client"
@@ -23,7 +23,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     query{
       characters (page: ${page}){ 
         results{
+          id
           name
+          image
         }
         info {
           count
@@ -38,7 +40,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { data } = await client.query<{
     characters: {
       results: {
-        name: string
+        id: string
+        name: string,
+        image: string
       }[],
       info: {
         count: number,
@@ -53,33 +57,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       page
     }
   })
-  /*const { data } = await client.query<{
-    character: {
-      id: string,
-      name: string,
-      status: string,
-      species: string,
-      type: string,
-      gender: string,
-      origin:  { name: string; url: string },
-      location:  { name: string; url: string },
-      image: string,
-      episode: string[],
-      url: string,
-      created: string,
-    }
-    info: {
-      count: number,
-      pages: number,
-      next: string,
-      prev: string
-    }
-  }>({
-    query,
-    variables: {
-      page
-    }
-  })*/
+  
 
   console.log("Informacion: ", );
   
@@ -100,29 +78,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 }*/
 
 
-const CharactersList = (props : {data: any, info:any}) => {
+const CharactersList = (props : {data: CharacterAPI[], info:Info}) => {
 
   //let page = props.info.next;
 
-  return (
-    <>
-      <h1>{props.data.map((character: any) => {
-        return (
-          <div>
-            {character.name}
-          </div>
-        )
-      })}</h1>
-      
-        <h1>{props.info.count}</h1>
-        <h1>{props.info.next}</h1>
-        <h1>{props.info.prev}</h1>
-      
-      
-    </>
-  )
+  let page = 1;
+
   //console.log(page);
-  /*return (
+  return (
     <div>
       <h1>Characters Lists</h1>
 
@@ -130,9 +93,8 @@ const CharactersList = (props : {data: any, info:any}) => {
 
       <DivPersonajes>
         
-        {props.results.map(
+        {props.data.map(
           (character) => (
-            (page = character.page),
             (
               <DivPersonajeUnicoLink>
 
@@ -164,40 +126,15 @@ const CharactersList = (props : {data: any, info:any}) => {
         </DivClickPaginas>
       </BotonPaginas>
 
-      <BotonPaginas>
-        <BotonClick
-          botonPaginaValida={page !== 1}
-          onClick={() => {
-            console.log("hola");
-            <Link href={`/personajes/${page - 1}`}>Anterior</Link>;
-            //location.replace(`/informacion/planets/${page - 1}`);
-            // Poner que paginaInvalida que debo poner BotonNextOrPrevous true
-          }}
-        >
-          Anterior Pagina
-        </BotonClick>
-
-        <BotonClick
-          botonPaginaValida={page !== 6}
-          onClick={() => {
-            location.replace(`/personajes/${page + 1}`);
-            window.scroll(0, 0);
-          }}
-        >
-          Siguiente Pagina
-        </BotonClick>
-      </BotonPaginas>
-
-      <Link style={links} href={`/personajes/${page - 1}`}>Anterior</Link>
     </div>
-  );*/
+  );
 };
 
 export default CharactersList;
 
 const links: React.CSSProperties = {
   textDecoration: "none",
-  color: "white"
+  color: "black"
 }
 
 const DivPersonajes = styled.div`
