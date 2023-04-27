@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps = async() => {
     `,
   });
 
-  console.log("Toda la informacion en getStaticPaths: ", data.characters.results.length)
+  console.log("Toda la informacion en getStaticPaths: ", data.characters.results)
   
     
     
