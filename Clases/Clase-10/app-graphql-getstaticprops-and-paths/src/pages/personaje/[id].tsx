@@ -14,23 +14,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
         characters {
           results {
             id
-            name
-            status
-            species
-            type
-            gender
-            origin {
-              name
-            }
-            location {
-              name
-            }
-            image
-            episode {
-              id
-            }
-            created
-          }
         }
       }
     `,
@@ -70,18 +53,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const { data } = await client.query<{
     characters: {
       results: {
-        id: string;
         name: string;
-        status: string;
-        species: string;
-        type: string;
-        gender: string;
-        origin: { name: string; url: string };
-        location: { name: string; url: string };
-        image: string;
-        episode: string[];
-        url: string;
-        created: string;
       }[];
     };
   }>({
