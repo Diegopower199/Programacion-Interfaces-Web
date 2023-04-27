@@ -1,18 +1,10 @@
+import { CharacterAPI } from "@/type";
 import Link from "next/link";
 import styled from "styled-components";
 
 let page = 0;
 
-const CharactersList = ({
-  data,
-}: {
-  data: Array<{
-    name: string;
-    id: string;
-    image: string;
-    page: number;
-  }>;
-}) => {
+const CharactersList = ({ data }: CharacterAPI) => {
   return (
     <div>
       <h1>Characters Lists</h1>
