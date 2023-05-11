@@ -6,6 +6,16 @@ type GraphQLResponse = {getWords:{word: string}[]};
 
 const Agenda = (props:{data: GraphQLResponse}) => {
 
+    useEffect ( () => {
+
+        const mutation = gql`
+        query {
+            getWord(word: "a")
+          }
+        `;
+        
+    }, [])
+
     // const query = gql`
     // query {
     //     getWords {

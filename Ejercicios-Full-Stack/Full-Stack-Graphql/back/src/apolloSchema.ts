@@ -4,6 +4,7 @@ type Word{
 }
 type Query{
   getWords: [Word!]!
+  getWord(word: String!): String!
 }
 type Mutation{
   addWord(word: String!): Word!

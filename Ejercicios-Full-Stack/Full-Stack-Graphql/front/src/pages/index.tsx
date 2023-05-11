@@ -19,6 +19,8 @@ export async function getServerSideProps(){
     query
   });
 
+  console.log("Informacion data", {data})
+
   return {
     props: {
       data: data
@@ -27,6 +29,8 @@ export async function getServerSideProps(){
 }
 
 export default function Home(props:{data: GraphQLResponse}) {
+
+  console.log(props.data);
 
   return (
     <>
