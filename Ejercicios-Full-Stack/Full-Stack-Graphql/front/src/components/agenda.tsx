@@ -6,16 +6,6 @@ type GraphQLResponse = {getWords:{word: string}[]};
 
 const Agenda = (props:{data: GraphQLResponse}) => {
 
-    useEffect ( () => {
-
-        const mutation = gql`
-        query {
-            getWord(word: "a")
-          }
-        `;
-        
-    }, [])
-
     // const query = gql`
     // query {
     //     getWords {
@@ -33,29 +23,25 @@ const Agenda = (props:{data: GraphQLResponse}) => {
     `;
 
     const [wordList, setWorldList] = useState<{word:string}[]>(props.data.getWords)
-
     const [newWord, setNewWord] = useState<string>("");
 
-    // const { data, loading, error } = useQuery<GraphQLResponse>(query);
+    const [mutateFunction, {data, loading, error}] = useMutation(mutation);
+    
+    if (loading) {
+        return (
+            <>
+                <h1>Loading...</h1>
+            </>
+        )
+    }
 
-    // if(loading){
-    //     return(
-    //         <>
-    //         <h1>Loading..</h1>
-    //         </>
-    //     )
-    // }
-
-    // if(error){
-    //     return(
-    //         <>
-    //         <h1>Error (NOOOOOOOOO)</h1>
-    //         </>
-    //     )
-    // }
-
-
-    const [mutateFunction] = useMutation(mutation);
+    if (error) {
+        return (
+            <>
+                <h1>Hay algun error y es el siguiente: {error.message}</h1>
+            </>
+        )
+    }
 
     return(
         <>
@@ -79,7 +65,7 @@ const Agenda = (props:{data: GraphQLResponse}) => {
                 }
 
                 <Title>Add Words</Title>
-                <input placeholder="Word..." value={newWord} onChange={(e) => {setNewWord(e.target.value)}}></input>
+                <input placeholder="Word.." value={newWord} onChange={(e) => {setNewWord(e.target.value)}}></input>
                 <BlueButton onClick={() => {
                     mutateFunction({variables: {word: newWord}});
                     setNewWord("");
