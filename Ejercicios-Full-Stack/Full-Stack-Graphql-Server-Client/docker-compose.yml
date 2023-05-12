@@ -17,8 +17,6 @@ services:
       - 7777:7777
     volumes:
       - ./back:/user/src
-    environment:
-      - MONGO_URL=mongodb://mongo/WordList
     depends_on:
       - mongo
     command: bash -c "cd /user/src && deno run --allow-all src/main.ts"
