@@ -37,6 +37,7 @@ export default function Home(props: {name: string}) {
   return (
     <>
       {props.name}
+      
     </>
   )
 }
