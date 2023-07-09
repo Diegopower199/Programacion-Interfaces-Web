@@ -11,5 +11,5 @@ type HomeProps = {
 };
 
 export default function Home(props: HomeProps) {
-  return <PersonajesPaginados name={""} id={"1"} image={""}/>;
+  return <PersonajesPaginados ></PersonajesPaginados>
 }

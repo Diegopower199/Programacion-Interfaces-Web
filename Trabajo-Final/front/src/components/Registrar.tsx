@@ -20,25 +20,26 @@ const Registrar = () => {
             const response = await fetch("http://localhost:8080/addUser", requestOptions);
             const data = await response.json();
             console.log("Informacion data: ", data);
-            console.log("El dato de response.ok es: ", response.ok);
-            setCreacionUsuarioCorrecta(response.ok);
-            /*const respuestaExitosa = response.ok;
-            console.log(respuestaExitosa)
-            if (respuestaExitosa) {
-                setCreacionUsuarioCorrecta(true);
-               
-            }
+            console.log("El dato de response.status es: ", response.status);
             //setCreacionUsuarioCorrecta(response.ok);
-            console.log("Response ok????? dentro de la funcion: ", respuestaExitosa, "          ", creacionUsuarioCorrecta);
-            setTest(data);*/
+            
+            if (response.status === 200) {
+                router.push("./loginUser");
+            }
+            else {
+                setCreacionUsuarioIncorrecta(true);
+                setMensajeError(data)
+            }
+            console.log(response)
         
     }
-            
+    
             
     const [nombreUsuario, setNombreUsuario] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [contrasena, setContrasena] = useState<string>("");
-    const [creacionUsuarioCorrecta, setCreacionUsuarioCorrecta] = useState<boolean>(false);
+    const [creacionUsuarioIncorrecta, setCreacionUsuarioIncorrecta] = useState<boolean>(false);
+    const [mensajeError, setMensajeError] = useState<string>("");
     
 
     return (
@@ -66,32 +67,24 @@ const Registrar = () => {
                             <InputEmailUsuarioPassword type="password" placeholder="Contraseña" onChange={(e) => setContrasena(e.target.value)}/>
                         </ContenedorInput>
 
-                        <BotonRegistrar type="submit" value="Registrate" onClick={ async (e) => {
-                            //console.log(e.target);
-                            console.log("HE DADO AL BOTON SIUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU\nNombre: ", nombreUsuario, "\nEmail: ", email, "\nContraseña: ", contrasena);
-                            
+                        { creacionUsuarioIncorrecta && (
+                            <>
+                                <ErrorMessage>{mensajeError}</ErrorMessage>
+                            </>
+                        )}
 
+                        <BotonRegistrar type="submit" value="Registrate" onClick={ async () => {
                             try {
-                                console.log("Antes del fetch", creacionUsuarioCorrecta);
+                                console.log("Nombre: ", nombreUsuario, "\nEmail: ", email, "\nContraseña: ", contrasena);
+                            
+                                console.log("Antes del fetch", creacionUsuarioIncorrecta);
                                 await fetchRegistrar();
-                                console.log("Despues del fetch", creacionUsuarioCorrecta);
-
-                                alert("El usuario creado");
-                                    
-                                router.push("./loginUser");
-                                
-                                //location.href = "./loginUser";
+                                console.log("Despues del fetch", creacionUsuarioIncorrecta);
                             }
-                            catch(e) {
-                                alert("El usuario ya existe");
+                            catch {
                                 
                             }
-                            
-                            
-                            
 
-
-                            
                         }}/>
                         <Parrafo>Al registrarte, aceptas nuestras Condiciones de uso y Política de privacidad.</Parrafo>
                         <Parrafo>¿Ya tienes una cuenta? <Link href={"./loginUser"}>Iniciar sesion</Link></Parrafo>
@@ -188,3 +181,8 @@ const LinkPaginaLogin = styled.link`
         color: cadetblue;
     }
 `
+
+export const ErrorMessage = styled.p`
+  color: red;
+  font-weight: 600;
+`;

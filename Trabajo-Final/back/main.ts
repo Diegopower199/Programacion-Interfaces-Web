@@ -54,6 +54,10 @@ async function handler(req: Request): Promise<Response> {
                 var nombreUsuario = params.get('nombreUsuario');
                 var contrasena = params.get('contrasena');
                 console.log("Valor nombre usuario: ", nombreUsuario, "\nValor password: ", contrasena)
+
+                if (nombreUsuario === "" || contrasena === "") {
+                  return new Response("Faltan campos por completar", { status: 400 })
+                }
   
                 const comprobarUser = await UsersCollection.findOne({nombreUsuario: nombreUsuario, contrasena: contrasena});
                 console.log("Comprobar usuario", comprobarUser)
@@ -64,7 +68,7 @@ async function handler(req: Request): Promise<Response> {
                   });
                 }
                 else {
-                  return new Response("El usuario y contraseña son incorrectos", { status: 200 });
+                  return new Response("El usuario y contraseña son incorrectos", { status: 400 });
                 }
                 
               } catch (e) {
@@ -89,7 +93,7 @@ async function handler(req: Request): Promise<Response> {
                   });
                 }
                 else {
-                  return new Response("El usuario y contraseña son incorrectos", { status: 200 });
+                  return new Response("El usuario y contraseña son incorrectos", { status: 400 });
                 }
                 
               } catch (e) {
@@ -155,10 +159,14 @@ async function handler(req: Request): Promise<Response> {
               const {nombreUsuario, email, contrasena} = body;
               console.log("Nombre: ", nombreUsuario, "\nEmail: ", email, "\nContraseña: ", contrasena);
 
+              if (nombreUsuario === "" || email === "" || contrasena === "") {
+                return new Response(JSON.stringify("Faltan campos por completar"), { status: 400 })
+              }
+
               const comprobarUser: boolean = await UsersCollection.findOne({nombreUsuario: nombreUsuario});
               console.log("Comprobar usuario", comprobarUser)
               if (comprobarUser) {
-                return new Response("El usuario ya existe", { status: 200 })
+                return new Response(JSON.stringify("El usuario ya existe"), { status: 400 })
               }
               const user = await UsersCollection.insertOne({ nombreUsuario, email, contrasena });
               return new Response(JSON.stringify({nombreUsuario, email, contrasena, id: user.insertedId}), { status: 200 });
@@ -200,7 +208,9 @@ async function handler(req: Request): Promise<Response> {
               const {filas, columnas, nombreUsuario} = body;
 
               const tablaUsuario = await TablaInformacionCollection.insertOne({ filas, columnas, nombreUsuario});
-              return new Response(JSON.stringify({filas, columnas, nombreUsuario, id: tablaUsuario.insertedId}), { status: 200 });
+              //const tablaUsuario = await TablaInformacionCollection.updateOne({nombreUsuario: nombreUsuario}, {$set: {columnas: columnas, filas: filas}})
+              //await tablesCollection.updateOne({ username: value.username }, { $set: { columns: table.columns, rows: table.rows } });
+              return new Response(JSON.stringify({filas, columnas, nombreUsuario}), { status: 200 });
             } catch (e) {
               return new Response(e, { status: 500 });
             }

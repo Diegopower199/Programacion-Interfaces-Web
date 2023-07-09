@@ -1,0 +1,103 @@
+import styled from "styled-components";
+
+export const Menu = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+`;
+
+export const BlueBorderMenu = styled.div`
+    font-weight: 600;
+    font-size: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 100px;
+    padding-right: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 7px solid #3b82f6;
+    border-radius: 15px;
+`;
+
+export const EventsList = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 70px;  
+    width: 1000px;
+`;
+
+export const EventDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border: 2px solid black;
+    border-radius: 5px;
+`;
+
+export const EventButtonsDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+`;
+
+export const Title = styled.h1`
+    background: #3b82f6;
+    color: white;
+    font-weight: 700;
+    padding: 20px;
+    margin: 0px;
+    border-radius: 15px;
+`;
+
+export const BlueButton = styled.button`
+    font-weight: 600;
+    border-radius: 5px;
+    color: white;
+    background: #3b82f6;
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover {
+        background: darkblue;
+    }
+`;
+
+export const RedButton = styled.button`
+    font-weight: 600;
+    border-radius: 5px;
+    color: white;
+    background: red;
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover {
+        background: #8B0000;
+    }
+`;
+
+export const GreenButton = styled.button`
+    font-weight: 600;
+    border-radius: 5px;
+    color: white;
+    background: green;
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover {
+        background: #245302;
+    }
+`;
+
+export const ErrorMessage = styled.p`
+    color: red;
+    font-weight: 600;
+`;

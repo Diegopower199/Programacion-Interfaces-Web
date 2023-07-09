@@ -8,7 +8,6 @@ const TablaInformacionUsuario = () => {
   var nombreUsuario = urlParams.get("nombreUsuario");
 
 
-  const [test, setTest] = useState<{ test: string } | undefined>(undefined);
   const [rows, setRows] = useState<(string | number)[][]>([]);
   const [columns, setColumns] = useState<string[]>([
     "Nombre",
@@ -25,39 +24,6 @@ const TablaInformacionUsuario = () => {
   const [valorColumna, setValorColumna] = useState<string>("");
   const [deleteRow, setDeleteRow] = useState<(string | number)[]>();
 
-  /*const fetchAddRow = async () => {
-    // POST request using fetch with async/await
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        filas: newRow,
-        columnas: columns,
-        nombreUsuario: nombreUsuario,
-      }),
-    };
-
-    const response = await fetch(
-      "http://localhost:8080/addInformacion",
-      requestOptions
-    );
-    const data = await response.json();
-    console.log("Informacion data: ", data);
-    console.log("El dato de response.ok es: ", response.ok);
-
-    const respuestaExitosa = response.ok;
-        console.log(respuestaExitosa)
-        if (respuestaExitosa) {
-            setCreacionUsuarioCorrecta(true);
-           
-        }
-        //setCreacionUsuarioCorrecta(response.ok);
-        console.log("Response ok????? dentro de la funcion: ", respuestaExitosa, "          ", creacionUsuarioCorrecta);
-        setTest(data);
-  };*/
-
   useEffect( () => {
     console.log("GET: ", nombreUsuario);
     const fetchTest = async () => {
@@ -68,40 +34,37 @@ const TablaInformacionUsuario = () => {
         `http://localhost:8080/getInformacionTablaUser?nombreUsuario=${nombreUsuario}`,
         requestOptions
       ); //Mismo puerto que el back
-      const data = await response.json();
-      //console.log("DATA con Object: ", Object.values(data), "\n");
-      
+      const data = await response.json(); 
 
-      const prueba =  data.informacionTabla;
+      const informacionTablaCargada =  data.informacionTabla;
+      
 
       let filasTotales: string[][] = [];
       let columnasTotales: string[] = []
 
         
 
-      //console.log("Toda la informacion de las filas almacenadas en la base de datos mongoo", filas)
-      
-      prueba.forEach( (item: { filas: string[], columnas: string[], nombreUsuario: string,}, index: number) => {
+      informacionTablaCargada.forEach( (item: { filas: string[], columnas: string[], nombreUsuario: string,}, index: number) => {
     
 
         filasTotales = [...filasTotales, item.filas]
-        //columnasTotales = [...columnasTotales, item.columnas]
         
-        console.log(item.columnas)
-        console.log(item.nombreUsuario)
+        item.columnas.forEach( (columna) => {
+          if (!columnasTotales.includes(columna)) {
+            console.log(columna)
+            columnasTotales.push(columna)
+          }
+        })
+        console.log("Columnas", item.columnas)
+        
+        //console.log("Fila: ", item.filas)
       })
 
-      console.log("FIlas totales: ", filasTotales);
+      console.log("Filas totales: ", filasTotales);
+      console.log("Columnas totales: ", columnasTotales);
       setRows(filasTotales);
-      //setColumns(columnasTotales);
-
-      /*Object.values(data).forEach( (valores: unknown) => {
-          console.log(typeof(valores));
-          Object.values(valores).forEach( (valoresTabla) => {
-            console.log(valoresTabla._id, valoresTabla.filas  )
-          })
-          
-        })*/
+      //setColumns(columnasTotales)
+      console.log("Columnas totales: ", informacionTablaCargada.columnas)
 
       
     };
@@ -112,7 +75,7 @@ const TablaInformacionUsuario = () => {
   
 
   useEffect(() => {
-    //console.log("Post add row en el use effect da como resultado ", newRow);
+    console.log("Post add row en el use effect da como resultado ", newRow);
     
     if ((JSON.stringify(newRow) !== JSON.stringify(["", "", ""]))) { // Para comparar que tienen los mismo valores
       console.log("El valor de newRow no es undefined", newRow, "\n", rows);
@@ -140,15 +103,6 @@ const TablaInformacionUsuario = () => {
 
         console.log("¿Se ha actualizado rows?: ", rows)
 
-        /*const respuestaExitosa = response.ok;
-            console.log(respuestaExitosa)
-            if (respuestaExitosa) {
-                setCreacionUsuarioCorrecta(true);
-               
-            }
-            //setCreacionUsuarioCorrecta(response.ok);
-            console.log("Response ok????? dentro de la funcion: ", respuestaExitosa, "          ", creacionUsuarioCorrecta);
-            setTest(data);*/
       };
       fetchAddRow();
     }
@@ -209,6 +163,7 @@ const TablaInformacionUsuario = () => {
               </ColumnDiv>
             </>
           ))}
+          <br/>
 
           {rows.map((row, index) => (
             <>
@@ -247,7 +202,7 @@ const TablaInformacionUsuario = () => {
                   );
                   //setDeleteRow()
                   console.log("Informacion de deleteRow: ", deleteRow);
-                  //await fetchDeleteRow();
+                  //await fetchDeleteRow(); ACTUALIZAR ESTO QUE FUNCIONA
                 }}
               >
                 <Image width={20} height={20} src="/trash.png" alt=""></Image>
@@ -307,7 +262,7 @@ const TablaInformacionUsuario = () => {
 
                 if (ningunFallo) {
                   setRows([...rows, newRow]);
-                  //await fetchAddRow();
+                  //await fetchAddRow(); ACTUALIZAR ESTO QUE ESTA BIEN
                   console.log("ROWS: ", rows);
                 } else {
                   alert("Hay errores en la introduccion de datos");

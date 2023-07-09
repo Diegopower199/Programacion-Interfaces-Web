@@ -45,7 +45,7 @@ type CharType = {
     image: string,
 }
 
-const PersonajesPaginados = (props: CharType[]) => {
+const PersonajesPaginados = () => {
     const [dataCharacter, setDataCharacter] = useState<CharType[]>([]);
     const [name, setName] = useState<string>("");
     const [page, setPage] = useState<number>(1);
@@ -81,13 +81,7 @@ const PersonajesPaginados = (props: CharType[]) => {
 
     */
 
-    if(true) {
-        return (
-            <>
-            
-            </>
-        )
-    }
+    
 
 
     return (
