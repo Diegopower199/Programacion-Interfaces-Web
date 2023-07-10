@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from 'next/router'
 
@@ -11,26 +11,21 @@ const Registrar = () => {
         // POST request using fetch with async/await
             const requestOptions = {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ nombreUsuario: nombreUsuario, email: email,contrasena: contrasena})
+                body: JSON.stringify({ username: nombreUsuario, email: email, password: contrasena})
             };
-    
+            console.log("hola")
             const response = await fetch("http://localhost:8080/addUser", requestOptions);
-            const data = await response.json();
-            console.log("Informacion data: ", data);
-            console.log("El dato de response.status es: ", response.status);
-            //setCreacionUsuarioCorrecta(response.ok);
-            
             if (response.status === 200) {
+                const data = await response.text();
+                console.log("Informacion usuario: ", data)
                 router.push("./loginUser");
             }
             else {
+                const data = await response.text();
                 setCreacionUsuarioIncorrecta(true);
                 setMensajeError(data)
             }
-            console.log(response)
+            
         
     }
     
@@ -54,17 +49,17 @@ const Registrar = () => {
             
                         <ContenedorInput>
                             <ImagenesIconos src={"/user-solid.png"} alt={'Esta cargando'}></ImagenesIconos>
-                            <InputEmailUsuarioPassword type="text" placeholder="Nombre usuario" onChange={(e) => setNombreUsuario(e.target.value)}/>
+                            <InputEmailUsuarioPassword type="text" placeholder="Nombre usuario" onChange={(e: ChangeEvent<HTMLInputElement>) => setNombreUsuario(e.target.value)}/>
                         </ContenedorInput>
                         
                         <ContenedorInput>
                             <ImagenesIconos src={"/envelope-solid.png"} alt={'Esta cargando'}></ImagenesIconos>
-                            <InputEmailUsuarioPassword type="text" placeholder="Correo Electronico" onChange={(e) => setEmail(e.target.value)}/>  
+                            <InputEmailUsuarioPassword type="text" placeholder="Correo Electronico" onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}/>  
                         </ContenedorInput>
                         
                         <ContenedorInput>
                             <ImagenesIconos src={"/lock-solid.png"} alt={'Esta cargando'}></ImagenesIconos>
-                            <InputEmailUsuarioPassword type="password" placeholder="Contraseña" onChange={(e) => setContrasena(e.target.value)}/>
+                            <InputEmailUsuarioPassword type="password" placeholder="Contraseña" onChange={(e: ChangeEvent<HTMLInputElement>) => setContrasena(e.target.value)}/>
                         </ContenedorInput>
 
                         { creacionUsuarioIncorrecta && (
@@ -128,6 +123,7 @@ const TituloH1 = styled.h1`
 `
 
 const InputEmailUsuarioPassword = styled.input`
+
     font-size: 20px;
     width: 800px;
     padding: 10px;

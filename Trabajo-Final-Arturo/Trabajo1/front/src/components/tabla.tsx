@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { GridItem, RemoveRowButton, ColumnName, 
     InputsDiv, Menu, Wrapper, 
     AddColumnButton, AddRowButton, GridInput, Title, ErrorMessage } from "../styles/myStyledComponents";
@@ -47,9 +47,11 @@ const Tabla = () => {
             const result = await response.json();
             console.log("Result: ", result)
             if (result.rows && result.columns) {
+                console.log("HAY ALGO")
               setRows(result.rows);
               setColumns(result.columns);
               setNewRow(result.columns.map((column: { name: string, type: string }) => {
+                console.log("Name: ", column.name, "\nType: ", column.type)
                 if (column.type === "checkbox") {
                   return "No";
                 }

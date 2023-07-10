@@ -18,3 +18,4 @@ services:
     volumes:
       - ./back:/usr/src
     command: bash -c "cd /usr/src && deno run --allow-net --allow-read --allow-env --unstable main.ts"
+    

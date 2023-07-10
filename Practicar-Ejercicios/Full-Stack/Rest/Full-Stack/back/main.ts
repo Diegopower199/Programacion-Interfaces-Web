@@ -2,6 +2,7 @@ import { RouterContext } from "https://deno.land/x/oak@v11.1.0/router.ts";
 import { Application, Router  } from "https://deno.land/x/oak@v11.1.0/mod.ts"; 
 import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
 import { MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts";
+import { getQuery } from "https://deno.land/x/oak@v11.1.0/helpers.ts"
 
 
 await config({ export: true, allowEmptyValues: true });
@@ -23,17 +24,18 @@ const tablesCollection = db.collection("Tables");
 type User = {
     username: string;
     password: string;
+    email: string;
     table: Table;
 };
 
-type column = {
+type Column = {
     name: string,
     type: string,
 }
 
 type Table = {
     username: string,
-    columns: column[],
+    columns: Column[],
     rows: string[][]
 }
 
@@ -44,24 +46,32 @@ Record<string | number, string | undefined>,
 Record<string, any>
 >;
 
-type GetLogInUsersContext = RouterContext<
+type PostLogInUsersContext = RouterContext<
 "/LogInJSON",
 Record<string | number, string | undefined>,
 Record<string, any>
 >;
 
-type GetLogInUsersWithParametrosContext = RouterContext<
+type PostLogInUsersWithParametrosContext = RouterContext<
 "/LogInParametros",
 Record<string | number, string | undefined>,
 Record<string, any>
 >;
 
 
+type PostInformationTableContext = RouterContext<
+"/addInformationTable",
+Record<string | number, string | undefined>,
+Record<string, any>
+>;
+
 type SaveTableContext = RouterContext<
 "/saveTable",
 Record<string | number, string | undefined>,
 Record<string, any>
 >;
+
+
 
 
 // DELETE
@@ -83,6 +93,10 @@ type DeleteElementsTableContext = RouterContext<
 Record<string | number, string | undefined>,
 Record<string, any>
 >;
+
+
+
+
 
 // GET
 
@@ -149,6 +163,7 @@ export const addUser = async(context: PostUsersContext) => {
         const user: Partial<User> = {
             username: value.username,
             password: value.password,
+            email: value.email,
             table: value.table,
         };
 
@@ -162,8 +177,8 @@ export const addUser = async(context: PostUsersContext) => {
         context.response.status = 500;
     }
 }
-
-export const logIn = async(context: GetLogInUsersContext) => {
+// LogIn con JSON
+export const logInJSON = async(context: PostLogInUsersContext) => {
     try{
         const result =  context.request.body({type: "json"})
         const value = await result.value;
@@ -186,6 +201,70 @@ export const logIn = async(context: GetLogInUsersContext) => {
     }
 }
 
+export const logInWithParametros = async(context: PostLogInUsersWithParametrosContext) => {
+    try{
+        const params = getQuery(context, { mergeParams: true });
+        if (!params.username || !params.password) {
+            
+            context.response.body = "Falta el campo username o password por completar";
+            context.response.status = 400;
+            return;
+        }
+
+        
+        const user = await usersCollection.findOne({ username: params.username, password: params.password });
+
+        if(!user){
+            context.response.body = "El usuario no existe";
+            context.response.status = 400;
+            return;
+        }else{
+            context.response.body = "El usuario existe";
+            context.response.status = 200;
+            return;
+        }
+
+    }
+    catch(error){
+        console.log(error);
+        context.response.status = 500;
+    }
+}
+
+export const addInformationTable = async(context: PostInformationTableContext) => {
+    try {
+        const result =  context.request.body({type: "json"})
+        const value = await result.value;
+
+        const table: Partial<Table> = {
+            username: value.username,
+            //columns: value.columns.map((column: any) => { return { name: column.name, type: column.type } }),
+            columns: value.columns.map((column: any) =>  {return { name : column.name, type: column.type}}),
+            rows: value.rows.map((row: any) => { return row}),
+        };
+
+        const tablaExistente = await tablesCollection.findOne({ username: value.username });
+
+        if(tablaExistente){
+            await tablesCollection.updateOne({ username: value.username }, { $set: { columns: table.columns, rows: table.rows } });
+            context.response.body = { table };
+            context.response.status = 200;
+            return;
+        }
+
+        await tablesCollection.insertOne(table);
+        context.response.body = { table };
+        context.response.status = 200;
+
+    } catch (error) {
+        console.log(error);
+        context.response.status = 500;
+    }
+}
+
+
+
+
 export const saveTable = async(context: SaveTableContext) => {
     try {
         const result =  context.request.body({type: "json"})
@@ -193,7 +272,7 @@ export const saveTable = async(context: SaveTableContext) => {
 
         const table: Partial<Table> = {
             username: value.username,
-            columns: value.columns.map((column: any) => { return { name: column.name, type: column.type } }),
+            columns: value.columns.map((column: any) =>  {return { name: column.name, type: column.type}}),
             rows: value.rows.map((row: any) => { return row}),
         };
 
@@ -215,9 +294,12 @@ export const saveTable = async(context: SaveTableContext) => {
     }
 }
 
+
+
+
 export const loadTable = async(context: LoadTableContext) => {
     try {
-
+        
         if(!context.params.username){
             context.response.body = "No hay usuario";
             context.response.status = 400;
@@ -245,21 +327,22 @@ export const loadTable = async(context: LoadTableContext) => {
 
 const router = new Router();
 router.post("/addUser", addUser);
-router.post("/LogInJSON", logIn); // JSON
-router.post("/LogInParametros", logIn);   
+router.post("/LogInJSON", logInJSON); // JSON
+router.post("/LogInParametros", logInWithParametros);   
+router.post("/addInformationTable", addInformationTable);
 router.post("/saveTable", saveTable);
 
-router.delete("/deleteUserJSON", );
+/*router.delete("/deleteUserJSON", );
 router.delete("/deleteUserParametros", );
-router.delete("/elementTable", );
+router.delete("/deleteInformacionTabla", );*/
 
 
 router.get("/loadTable/:username", loadTable);
-router.get("/getUser", )
+/*router.get("/getUser", )
 router.get("getUser/:username", )
 
 router.put("/updateInformationUserJSON", ) // Con JSON
-router.put("/updateInformationUser/:username", )
+router.put("/updateInformationUser/:username", )*/
 
 
 const app = new Application();
