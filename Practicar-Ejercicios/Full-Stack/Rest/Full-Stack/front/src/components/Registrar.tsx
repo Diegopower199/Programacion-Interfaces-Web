@@ -24,9 +24,7 @@ const Registrar = () => {
                 const data = await response.text();
                 setCreacionUsuarioIncorrecta(true);
                 setMensajeError(data)
-            }
-            
-        
+            }  
     }
     
             
