@@ -13,32 +13,37 @@ type GetEvento = {
   _id: string;
 };
 
-const UpdateEvent = () => {
-  const [errorBackGet, setErrorBackGet] = useState<{
-    error: string | undefined;
-  }>({
-    error: undefined,
-  });
-  const [errorBackUpdate, setErrorBackUpdate] = useState<{
-    error: string | undefined;
-  }>({
-    error: undefined,
-  });
-
-  const [errorFecha, setErrorFecha] = useState<boolean>(false);
-  const [errorHoraInicioFinalizacion, setErrorHoraInicioFinalizacion] =
-    useState<boolean>(false);
-  const [errorDatos, setErrorDatos] = useState<boolean>(false);
-
+const RemoveEvent = () => {
   const [data, setData] = useState<GetEvento[]>([]);
+  const [errorBackGetEvent, setErrorBackGetEvent] = useState<{ error: string | undefined; }>({ error: undefined });
+  const [errorBackCreateEvent, setErrorBackCreateEvent] = useState<{ error: string | undefined; }>({ error: undefined });
+  const [errorBackDeleteEvent, setErrorBackDeleteEvent] = useState<{ error: string | undefined; }>({ error: undefined });
+  const [errorBackUpdateEvent, setErrorBackUpdateEvent] = useState<{ error: string | undefined; }>({ error: undefined });
 
+  const [errorFechaUpdateEvent, setErrorFechaUpdateEvent] = useState<boolean>(false);
+  const [errorFechaCreateEvent, setErrorFechaCreateEvent] = useState<boolean>(false);
+  
+  const [errorHoraInicioFinalizacionUpdateEvent, setErrorHoraInicioFinalizacionUpdateEvent] = useState<boolean>(false);
+  const [errorHoraInicioFinalizacionCreateEvent, setErrorHoraInicioFinalizacionCreateEvent] = useState<boolean>(false);
+
+  const [errorDatosUpdateEvent, setErrorDatosUpdateEvent] = useState<boolean>(false);
+  const [errorDatosCreateEvent, setErrorDatosCreateEvent] = useState<boolean>(false);
+
+  // Esrados para remove event
+  const [idRemove, setIdRemove] = useState<string>("");
+  const [responseRemoveFetch, setResponseRemoveFetch] = useState<string>("");
+
+  // Estados para create event
+  const [titulo, setTitulo] = useState<string>("");
+  const [descripcion, setDescripcion] = useState<string>("");
+  const [fecha, setFecha] = useState<string>("");
+  const [horaInicio, setHoraInicio] = useState<string>("");
+  const [horaFinalizacion, setHoraFinalizacion] = useState<string>("");
+  const [invitados, setInvitados] = useState<string[]>([""]);
+
+  // Estados para update event
   const [editIdSelected, setEditIdSelected] = useState<string>("");
-
-  // de la misma forma, este estado guarda la fecha del evento a editar
-  // para posteriormente mostrarla en el formulario
   const [auxDate, setAuxDate] = useState<Date>(new Date());
-
-  // estados para gestionar los parámetros de los eventos a editar
   const [updateEventDate, setUpdateEventDate] = useState<string>("");
   const [updateEventTitle, setUpdateEventTitle] = useState<string>("");
   const [updateEventDesc, setUpdateEventDesc] = useState<string>("");
@@ -47,6 +52,73 @@ const UpdateEvent = () => {
   const [updateEventInvitados, setUpdateEventInvitados] = useState<string[]>([
     "",
   ]);
+
+  const createEvent = async () => {
+    try {
+      const objetoFecha = new Date(fecha);
+      const requestOptions = {
+        method: "POST",
+        body: JSON.stringify({
+          titulo: titulo,
+          descripcion: descripcion,
+          fecha: objetoFecha,
+          inicio: Number(horaInicio),
+          fin: Number(horaFinalizacion),
+          invitados: invitados,
+        }),
+      };
+      console.log("requestOptions: ", requestOptions);
+
+      const response = await fetch(
+        "http://localhost:8080/addEvent",
+        requestOptions
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+        setErrorBackCreateEvent({ error: undefined });
+      } else {
+        const result = await response.json();
+        setErrorBackCreateEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
+        console.log("Error", await response.json());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeEvent = async (idRemove: string) => {
+    try {
+      const requestOptions = {
+        method: "DELETE",
+      };
+      console.log(
+        "requestOptions: ",
+        requestOptions,
+        "\nId remove: ",
+        idRemove
+      );
+
+      const response = await fetch(
+        `http://localhost:8080/deleteEvent/${idRemove}`,
+        requestOptions
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Resultado", result.message);
+        setResponseRemoveFetch(result.message);
+        setErrorBackDeleteEvent({ error: undefined });
+      } else {
+        const result = await response.json();
+        setErrorBackDeleteEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
+        console.log("Error", await response.json());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const updateEvent = async () => {
     try {
@@ -73,10 +145,10 @@ const UpdateEvent = () => {
       if (response.ok) {
         const result = await response.json();
         console.log(result);
-        setErrorBackUpdate({ error: undefined });
+        setErrorBackUpdateEvent({ error: undefined });
       } else {
         const result = await response.json();
-        setErrorBackUpdate({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
+        setErrorBackUpdateEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
         console.log("Error", await response.json());
       }
     } catch (error) {
@@ -99,11 +171,11 @@ const UpdateEvent = () => {
         const result = await response.json();
 
         setData(result.eventos);
+        setErrorBackGetEvent({ error: undefined });
         console.log("Informacion de result", result);
-        setErrorBackGet({ error: undefined });
       } else {
         console.log("Error", await response.statusText);
-        setErrorBackGet({ error: await response.statusText });
+        setErrorBackGetEvent({ error: await response.statusText });
       }
     } catch (error) {
       console.log(error);
@@ -119,11 +191,13 @@ const UpdateEvent = () => {
       <Link href={"/"}>
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
-      <RedBorderMenu>
-        <H1Titulo>Update Event</H1Titulo>
+      <GreenBorderMenu>
+        <H1Titulo>Events</H1Titulo>
 
-        {errorBackGet.error ? (
-          <ErrorMessage>{errorBackGet.error}</ErrorMessage>
+        {errorBackGetEvent.error !== undefined ? (
+          <>
+            <ErrorMessage>{errorBackGetEvent.error}</ErrorMessage>
+          </>
         ) : (
           <>
             {data.length === 0 ? (
@@ -138,31 +212,53 @@ const UpdateEvent = () => {
                     <>
                       <DivElementosSlot>
                         <DivElemento>
-                          <ParrafoTitulo>Titulo</ParrafoTitulo>
+                          <ParrafoTitulo>Title</ParrafoTitulo>
                           <ParrafoValores>{event.titulo}</ParrafoValores>
                         </DivElemento>
 
                         <DivElemento>
-                          <ParrafoTitulo>Descripcion</ParrafoTitulo>
+                          <ParrafoTitulo>Description</ParrafoTitulo>
                           <ParrafoValores>{event.descripcion}</ParrafoValores>
                         </DivElemento>
 
                         <DivElemento>
-                          <ParrafoTitulo>Fecha</ParrafoTitulo>
+                          <ParrafoTitulo>Date</ParrafoTitulo>
                           <ParrafoValores>
                             {event.fecha.toString().substring(0, 10)}
                           </ParrafoValores>
                         </DivElemento>
 
                         <DivElemento>
-                          <ParrafoTitulo>Inicio</ParrafoTitulo>
+                          <ParrafoTitulo>Start hour</ParrafoTitulo>
                           <ParrafoValores>{event.inicio}</ParrafoValores>
                         </DivElemento>
 
                         <DivElemento>
-                          <ParrafoTitulo>Fin</ParrafoTitulo>
+                          <ParrafoTitulo>End hour</ParrafoTitulo>
                           <ParrafoValores>{event.fin}</ParrafoValores>
                         </DivElemento>
+
+                        <DivElemento>
+                          <ParrafoTitulo>Invitados</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.invitados.toString()}
+                          </ParrafoValores>
+                        </DivElemento>
+
+                        <BotonBorrar
+                          onClick={async (e) => {
+                            setIdRemove(event._id);
+                            console.log("Id remove", idRemove);
+                            await removeEvent(event._id);
+                            console.log("todo bien");
+                            await allEvents();
+                          }}
+                        >
+                          <ImagenesIconos
+                            src={"/trash.png"}
+                            alt={"Esta cargando"}
+                          ></ImagenesIconos>
+                        </BotonBorrar>
 
                         <BotonActualizar
                           onClick={() => {
@@ -193,9 +289,12 @@ const UpdateEvent = () => {
             )}
           </>
         )}
+      </GreenBorderMenu>
 
-        {editIdSelected ? (
-          <>
+      {editIdSelected ? (
+        <>
+          <RedBorderMenu>
+            <H1Titulo>Update event</H1Titulo>
             <DivFormulario>
               <DivElementoFormulario>
                 <LabelIdentificar>Titulo: </LabelIdentificar>
@@ -309,19 +408,20 @@ const UpdateEvent = () => {
                       updateEventEnd === ""
                     ) {
                       console.log("Error de datos");
-                      setErrorDatos(true);
-                      setErrorHoraInicioFinalizacion(false);
-                      setErrorFecha(false);
+                      setErrorDatosUpdateEvent(true);
+                      setErrorHoraInicioFinalizacionUpdateEvent(false);
+                      setErrorFechaUpdateEvent(false);
+                      setErrorFechaUpdateEvent(false);
                     } else if (Number(yearSeleccionado) < 1970) {
-                      setErrorFecha(true);
-                      setErrorDatos(false);
-                      setErrorHoraInicioFinalizacion(false);
+                      setErrorFechaUpdateEvent(true);
+                      setErrorDatosUpdateEvent(false);
+                      setErrorHoraInicioFinalizacionUpdateEvent(false);
                     } else if (
                       Number(updateEventStart) >= Number(updateEventEnd)
                     ) {
-                      setErrorHoraInicioFinalizacion(true);
-                      setErrorDatos(false);
-                      setErrorFecha(false);
+                        setErrorHoraInicioFinalizacionUpdateEvent(true);
+                        setErrorDatosUpdateEvent(false);
+                      setErrorFechaUpdateEvent(false);
                     } else {
                       await updateEvent();
                       setEditIdSelected("");
@@ -331,41 +431,224 @@ const UpdateEvent = () => {
                 }}
               ></InputSubmit>
 
-              {errorDatos ? (
+              {errorDatosUpdateEvent ? (
                 <>
                   <ParrafoErrores>Hay un error de datos</ParrafoErrores>
                 </>
-              ) : errorFecha ? (
+              ) : errorFechaUpdateEvent ? (
                 <>
                   <ParrafoErrores>
                     El año tiene que ser igua o superior a 1970
                   </ParrafoErrores>
                 </>
-              ) : errorHoraInicioFinalizacion ? (
+              ) : errorHoraInicioFinalizacionUpdateEvent ? (
                 <>
                   <ParrafoErrores>
                     La hora de inicio es mayor o igual que la hora de
                     finalizacion
                   </ParrafoErrores>
                 </>
-              ) : errorBackUpdate.error ? (
+              ) : errorBackUpdateEvent.error ? (
                 <>
-                  <ParrafoErrores>{errorBackUpdate.error}</ParrafoErrores>
+                  <ParrafoErrores>{errorBackUpdateEvent.error}</ParrafoErrores>
                 </>
               ) : (
                 <></>
               )}
             </DivFormulario>
-          </>
-        ) : (
-          <></>
-        )}
-      </RedBorderMenu>
+          </RedBorderMenu>
+        </>
+      ) : (
+        <></>
+      )}
+
+      <PurpleBorderMenu>
+        <H1Titulo>Add Event</H1Titulo>
+        <DivFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Titulo: </LabelIdentificar>
+            <InputValores
+              type="text"
+              value={titulo}
+              placeholder="Titulo"
+              onChange={(e) => {
+                setTitulo(e.target.value);
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Descripcion: </LabelIdentificar>
+            <InputValores
+              type="text"
+              value={descripcion}
+              placeholder="Descripcion"
+              onChange={(e) => {
+                setDescripcion(e.target.value);
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Fecha: </LabelIdentificar>
+            <InputValores
+              type="date"
+              value={fecha}
+              placeholder="Date"
+              onChange={(e) => {
+                setFecha(e.target.value);
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Hora de inicio </LabelIdentificar>
+            <InputValores
+              type="number"
+              value={horaInicio}
+              placeholder="Hora de inicio"
+              onChange={(e) => {
+                console.log(Number(e.target.value));
+                if (e.target.value.includes("-")) {
+                  e.target.value = "";
+                } else if (Number(e.target.value) >= 25) {
+                  e.target.value = e.target.value.slice(0, 2);
+                  if (Number(e.target.value) > 24) {
+                    e.target.value = e.target.value.slice(0, 1);
+                  }
+                  console.log("Cambio de valor", e.target.value);
+                } else {
+                  setHoraInicio(e.target.value);
+                }
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Hora de finalizacion </LabelIdentificar>
+            <InputValores
+              type="number"
+              value={horaFinalizacion}
+              placeholder="Hora de finalizacion"
+              onChange={(e) => {
+                console.log(Number(e.target.value));
+                if (e.target.value.includes("-")) {
+                  e.target.value = "";
+                } else if (Number(e.target.value) >= 25) {
+                  e.target.value = e.target.value.slice(0, 2);
+                  if (Number(e.target.value) > 24) {
+                    e.target.value = e.target.value.slice(0, 1);
+                  }
+                  console.log("Cambio de valor", e.target.value);
+                } else {
+                  setHoraFinalizacion(e.target.value);
+                }
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Invitados: </LabelIdentificar>
+            <InputValores
+              type="text"
+              value={invitados.toString()}
+              placeholder="Invitados"
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                console.log("Invitados", invitados);
+                const strings = inputValue.split(",");
+                setInvitados(
+                  strings.map((invitado: string) => invitado.trim())
+                );
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+
+          <InputSubmit
+            type="submit"
+            value={"Añadir evento"}
+            onClick={async () => {
+              try {
+                let yearSeleccionado = fecha.slice(0, 4);
+                if (
+                  titulo === "" ||
+                  descripcion === "" ||
+                  fecha === "" ||
+                  horaInicio === "" ||
+                  horaFinalizacion === ""
+                ) {
+                  console.log("Error de datos");
+                  setErrorDatosCreateEvent(true);
+                  setErrorHoraInicioFinalizacionCreateEvent(false);
+                  setErrorFechaCreateEvent(false);
+                } else if (Number(yearSeleccionado) < 1970) {
+                  setErrorFechaCreateEvent(true);
+                  setErrorDatosCreateEvent(false);
+                  setErrorHoraInicioFinalizacionCreateEvent(false);
+                } else if (Number(horaInicio) >= Number(horaFinalizacion)) {
+                  setErrorHoraInicioFinalizacionCreateEvent(true);
+                  setErrorDatosCreateEvent(false);
+                  setErrorFechaCreateEvent(false);
+                } else {
+                  await createEvent();
+
+                  setErrorDatosCreateEvent(false);
+                  setErrorFechaCreateEvent(false);
+                  setErrorHoraInicioFinalizacionCreateEvent(false);
+
+                  setTitulo("");
+                  setDescripcion("");
+                  setFecha("");
+                  setHoraInicio("");
+                  setHoraFinalizacion("");
+                  setInvitados([""]);
+                  await allEvents(); 
+                }
+              } catch {}
+            }}
+          ></InputSubmit>
+          {errorDatosCreateEvent ? (
+            <>
+              <ParrafoErrores>Hay un error de datos</ParrafoErrores>
+            </>
+          ) : errorFechaCreateEvent ? (
+            <>
+              <ParrafoErrores>
+                El año tiene que ser igua o superior a 1970
+              </ParrafoErrores>
+            </>
+          ) : errorHoraInicioFinalizacionCreateEvent ? (
+            <>
+              <ParrafoErrores>
+                La hora de inicio es mayor o igual que la hora de finalizacion
+              </ParrafoErrores>
+            </>
+          ) : errorBackCreateEvent.error !== undefined ? (
+            <>
+              <ParrafoErrores>{errorBackCreateEvent.error}</ParrafoErrores>
+            </>
+          ) : (
+            <></>
+          )}
+        </DivFormulario>
+      </PurpleBorderMenu>
     </>
   );
 };
 
-export default UpdateEvent;
+export default RemoveEvent;
+
+const GreenBorderMenu = styled.div`
+  font-weight: 600;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 7px solid #43c54e;
+  border-radius: 15px;
+  margin: 10px;
+`;
 
 const RedBorderMenu = styled.div`
   font-weight: 600;
@@ -380,6 +663,25 @@ const RedBorderMenu = styled.div`
   overflow: hidden;
   white-space: nowrap;
   border: 7px solid #e72720;
+  border-radius: 15px;
+  margin: 10px;
+`;
+
+const PurpleBorderMenu = styled.div`
+  font-weight: 600;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 7px solid #733bf6;
   border-radius: 15px;
   margin: 10px;
 `;
@@ -469,12 +771,12 @@ const BotonMenuPrincipal = styled.div`
   }
 `;
 
-export const ErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
 `;
 
-export const ItemsList = styled.div`
+const ItemsList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -482,7 +784,15 @@ export const ItemsList = styled.div`
   width: 600px;
 `;
 
-export const BotonActualizar = styled.button`
+const BotonBorrar = styled.button`
+  font-weight: 600;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+`;
+
+const BotonActualizar = styled.button`
   font-weight: 600;
   border-radius: 5px;
   color: white;

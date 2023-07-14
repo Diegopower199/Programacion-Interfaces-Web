@@ -114,7 +114,6 @@ const UpdateEvent = () => {
           ) : (
             <>
               {queryAnswer.data?.events.map((event) => {
-                const date = new Date(event.date);
                 return (
                   <>
                     <DivElementosSlot>
@@ -147,6 +146,7 @@ const UpdateEvent = () => {
 
                       <BotonActualizar
                         onClick={() => {
+                          const date = new Date(event.date);
                           setEditSelected(event.id);
                           setAuxDate(new Date(event.date));
                           setUpdateEventDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
@@ -206,6 +206,7 @@ const UpdateEvent = () => {
                 placeholder="Date"
                 onChange={(e) => {
                   setUpdateEventDate(e.target.value);
+                  console.log(updateEventDate)
                 }}
               ></InputValores>
             </DivElementoFormulario>
@@ -293,6 +294,7 @@ const UpdateEvent = () => {
                         endHour: parseInt(updateEventEnd),
                       },
                     });
+                    setEditSelected('');
                     await queryAnswer.refetch();
                   }
                 } catch {}
@@ -325,7 +327,9 @@ const UpdateEvent = () => {
           </DivFormulario>
         </>
       ) : (
-        <></>
+        <>
+          <div></div>
+        </>
       )}
     </>
   );

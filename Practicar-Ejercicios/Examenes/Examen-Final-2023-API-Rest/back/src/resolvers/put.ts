@@ -18,8 +18,11 @@ export const updateEvent = async(context: UpdateEventContext) => {
     try{
         const result = context.request.body({ type: "json" });
         const value = await result.value;
-
-        if(!value.titulo  || !value.fecha || !value.inicio || !value.inicio || !value.fin || !value.invitados || !value.id){
+        console.log(value)
+        console.log("Esto es true?? (!value.titulo  || !value.fecha || !value.inicio || !value.fin || !value.invitados || !value.id)", (!value.titulo  || !value.fecha || !value.inicio || !value.fin || !value.invitados || !value.id))
+        if(!value.titulo  || !value.fecha || !value.inicio || !value.fin || !value.invitados || !value._id){
+            console.log(!value.titulo, "  ", !value.fecha, "  ", !value.inicio, "  ", !value.fin , "  ", !value.invitados)
+            console.log("Valor invitados: ", value.invitados)
             context.response.body = {
                 message: "Faltan datos por poner",
             }
@@ -33,7 +36,7 @@ export const updateEvent = async(context: UpdateEventContext) => {
         const fin: number = value.fin;
         const fecha: Date | null = new Date(value.fecha);
         const invitados: string[] = value.invitados;
-        const id: string = value.id;
+        const id: string = value._id;
 
         const mievento = await eventosCollections.findOne({_id: new ObjectId(id)});
 

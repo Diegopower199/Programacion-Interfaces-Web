@@ -1,6 +1,7 @@
 import Link from "next/link";
 import styled from "styled-components";
 
+
 export default function Home() {
   return (
     <>
@@ -22,10 +23,16 @@ export default function Home() {
           <Link href={`/deleteEvent`} as={`/deleteEvent`}>
             <BotonEnlaces>Delete event</BotonEnlaces>
           </Link>
+
+          <Link href={`/allFunctionsEvent`} as={`/allFunctionsEvent`}>
+            <BotonEnlaces>Todas las funcionalidades</BotonEnlaces>
+          </Link>
+
+          
         </DivBotones>
       </DivGeneral>
     </>
-  )
+  );
 }
 
 const DivGeneral = styled.div`

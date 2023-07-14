@@ -1,30 +1,22 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-export type RemoveEventResponse = {
-  removeEvent: {
-    id: string;
-    title: string;
-    description: string;
-    date: Date;
-    startHour: number;
-    endHour: number;
-  };
-};
 
-export type Evento = {
+type Evento = {
   titulo: string;
   descripcion: string;
   fecha: Date;
   inicio: number;
   fin: number;
   invitados: string[];
-  id: string;
+  _id: string;
 };
 
-const RemoveEvent = () => {
+const Events = () => {
+  const router = useRouter();
   const [data, setData] = useState<Evento[]>([]);
   const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({
     error: undefined,
@@ -43,9 +35,10 @@ const RemoveEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(typeof result);
+        
         setData(result.eventos);
         console.log("Informacion de result", result);
+        setErrorBack({ error: undefined });
       } else {
         console.log("Error", await response.statusText);
         setErrorBack({ error: await response.statusText });
@@ -56,9 +49,17 @@ const RemoveEvent = () => {
   };
 
   useEffect(() => {
-    console.log("Initialized true");
+    console.log("Solo estamos la primera vez, despues cada 5 segundos se carga la informacion")
     allEvents();
-    console.log("HOLA: ", errorBack.error)
+    const intervalId = setInterval(() => {
+      console.log("Initialized true");
+      allEvents();
+      console.log("HOLA: ", errorBack.error)
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    }
   }, []);
 
   return (
@@ -66,11 +67,12 @@ const RemoveEvent = () => {
       <Link href={"/"}>
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
-      <h1>Events</h1>
+      <GreenBorderMenu>
+      <H1Titulo>Events</H1Titulo>
 
       { (errorBack.error !== undefined) ? (
         <>
-            <ErrorMessage>NADA{errorBack.error}</ErrorMessage>
+            <ErrorMessage>{errorBack.error}</ErrorMessage>
         </>
       ) : (
         <>
@@ -110,6 +112,20 @@ const RemoveEvent = () => {
                         <ParrafoTitulo>End hour</ParrafoTitulo>
                         <ParrafoValores>{event.fin}</ParrafoValores>
                       </DivElemento>
+
+                      <DivElemento>
+                        <ParrafoTitulo>Invitados</ParrafoTitulo>
+                        <ParrafoValores>{event.invitados.toString()}</ParrafoValores>
+                      </DivElemento>
+
+                      <BotonBorrar
+                        onClick={ async () => {
+                            router.push(`/event/${event._id}`)
+                        }}
+                      >
+                        <ParrafoValores>IR A LA PAGINA CON EL ID</ParrafoValores>
+                        
+                      </BotonBorrar>
                     </DivElementosSlot>
                   </>
                 );
@@ -118,11 +134,37 @@ const RemoveEvent = () => {
           )}
         </>
       )}
+      </GreenBorderMenu>
     </>
   );
 };
 
-export default RemoveEvent;
+export default Events;
+
+const GreenBorderMenu = styled.div`
+  font-weight: 600;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 7px solid #43c54e;
+  border-radius: 15px;
+  margin: 10px;
+`;
+
+const H1Titulo = styled.h1`
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 
 const DivFormulario = styled.div`
   display: flex;
@@ -202,12 +244,12 @@ const BotonMenuPrincipal = styled.div`
   }
 `;
 
-export const ErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
 `;
 
-export const ItemsList = styled.div`
+const ItemsList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -215,7 +257,7 @@ export const ItemsList = styled.div`
   width: 600px;
 `;
 
-export const BotonBorrar = styled.button`
+const BotonBorrar = styled.button`
   font-weight: 600;
   border-radius: 5px;
   color: white;
@@ -260,17 +302,8 @@ const ParrafoValores = styled.p`
   font-family: Arial, sans-serif;
   font-size: 18px;
   color: #333;
-  line-height: 1.5em;
+  line-height: 1.6em;
   text-align: justify;
   color: #2f2f2f;
   border-radius: 5px;
-`;
-
-const ImagenesIconos = styled.img`
-  margin: 3px;
-  width: 50px;
-  height: 60px;
-  text-align: center;
-  color: #999;
-  box-sizing: border-box;
 `;
