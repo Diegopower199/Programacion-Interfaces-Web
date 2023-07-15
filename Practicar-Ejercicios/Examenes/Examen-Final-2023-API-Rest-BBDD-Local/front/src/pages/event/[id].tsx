@@ -1,12 +1,10 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
-import React from "react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-type GetEvento = {
-  _id: string;
+type Evento = {
+  id: string;
   titulo: string;
   descripcion: string;
   fecha: Date;
@@ -17,11 +15,12 @@ type GetEvento = {
 
 const Event = () => {
   const router = useRouter();
-  const [data, setData] = useState<GetEvento | undefined>(undefined);
+  const [data, setData] = useState<Evento | undefined>(undefined);
   const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({
     error: undefined,
   });
   const [errorDatos, setErrorDatos] = useState<boolean>(false);
+  
 
   const eventById = async (id: string) => {
     try {
@@ -36,15 +35,15 @@ const Event = () => {
 
       if (response.ok) {
         const result = await response.json();
+        console.log("Informacion de result", result);
 
-        setData(result.evento);
+        setData(result);
         console.log("Informacion de result", result);
         setErrorBack({ error: undefined });
       } else {
-        const result = await response.json();
-        setErrorBack({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
-        setData(undefined);
+        console.log("Error", await response.text());
+        setErrorBack({ error: await response.text() });
+        setData(undefined)
       }
     } catch (error) {
       console.log(error);
@@ -52,24 +51,24 @@ const Event = () => {
   };
 
   useEffect(() => {
-    console.log(
-      "Solo estamos la primera vez, despues cada 5 segundos se carga la informacion"
-    );
-    const id = location.pathname.split("/").pop(); // Lo hacemos para coger la ultima parte de la ruta
-    console.log("ID: ", id);
+    console.log("Solo estamos la primera vez, despues cada 5 segundos se carga la informacion");
+    
+    const id = location.pathname.split('/').pop(); // Lo hacemos para coger la ultima parte de la ruta
     if (id === undefined) {
-      setErrorDatos(true);
-    } else {
-      eventById(id);
+        setErrorDatos(true);
     }
-
+    else {
+        eventById(id);
+    }
+    
     const intervalId = setInterval(() => {
       console.log("Initialized true");
       if (id === undefined) {
         setErrorDatos(true);
-      } else {
+    }
+    else {
         eventById(id);
-      }
+    }
       console.log("HOLA: ", errorBack.error);
     }, 5000);
 
@@ -85,7 +84,7 @@ const Event = () => {
           Ir donde estan todos los eventos
         </BotonMenuPrincipal>
       </Link>
-      <H1Titulo>Informacion del evento</H1Titulo>
+      <h1>Informacion del evento </h1>
 
       {errorBack.error !== undefined ? (
         <>
@@ -93,7 +92,7 @@ const Event = () => {
         </>
       ) : (
         <>
-          {!data ? (
+          { (!data) ? (
             <>Cargando informacion</>
           ) : (
             <>
@@ -124,11 +123,6 @@ const Event = () => {
                   <ParrafoTitulo>End hour</ParrafoTitulo>
                   <ParrafoValores>{data.fin}</ParrafoValores>
                 </DivElemento>
-
-                <DivElemento>
-                  <ParrafoTitulo>Invitados</ParrafoTitulo>
-                  <ParrafoValores>{data.invitados.toString()}</ParrafoValores>
-                </DivElemento>
               </DivElementosSlot>
             </>
           )}
@@ -139,6 +133,7 @@ const Event = () => {
 };
 
 export default Event;
+
 
 const BotonMenuPrincipal = styled.div`
   border: 1px solid #2e518b; /*anchura, estilo y color borde*/
@@ -203,11 +198,4 @@ const ParrafoValores = styled.p`
   text-align: justify;
   color: #2f2f2f;
   border-radius: 5px;
-`;
-
-const H1Titulo = styled.h1`
-  color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;

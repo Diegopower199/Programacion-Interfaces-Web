@@ -1,6 +1,5 @@
 import Link from "next/link";
-import React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 type AddEventResponse = {
@@ -13,7 +12,9 @@ type AddEventResponse = {
   invitados: string[];
 };
 
+
 const AddEvent = () => {
+  const [initialized, setInitialized] = useState(false);
   const [responseAddEvent, setResponseAddEvent] = useState<AddEventResponse>();
   const [titulo, setTitulo] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
@@ -29,6 +30,8 @@ const AddEvent = () => {
   const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({
     error: undefined,
   });
+
+  
 
   const createEvent = async () => {
     try {
@@ -53,8 +56,8 @@ const AddEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
+        setResponseAddEvent(result)
         console.log(result);
-        setResponseAddEvent(result);
         setErrorBack({ error: undefined });
       } else {
         const result = await response.json();
@@ -81,7 +84,7 @@ const AddEvent = () => {
               type="text"
               value={titulo}
               placeholder="Titulo"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 setTitulo(e.target.value);
               }}
             ></InputValores>
@@ -92,7 +95,7 @@ const AddEvent = () => {
               type="text"
               value={descripcion}
               placeholder="Descripcion"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 setDescripcion(e.target.value);
               }}
             ></InputValores>
@@ -103,7 +106,7 @@ const AddEvent = () => {
               type="date"
               value={fecha}
               placeholder="Date"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 setFecha(e.target.value);
               }}
             ></InputValores>
@@ -114,7 +117,7 @@ const AddEvent = () => {
               type="number"
               value={horaInicio}
               placeholder="Hora de inicio"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 console.log(Number(e.target.value));
                 if (e.target.value.includes("-")) {
                   e.target.value = "";
@@ -136,7 +139,7 @@ const AddEvent = () => {
               type="number"
               value={horaFinalizacion}
               placeholder="Hora de finalizacion"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 console.log(Number(e.target.value));
                 if (e.target.value.includes("-")) {
                   e.target.value = "";
@@ -158,7 +161,7 @@ const AddEvent = () => {
               type="text"
               value={invitados.toString()}
               placeholder="Invitados"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 const inputValue = e.target.value;
                 console.log("Invitados", invitados);
                 const strings = inputValue.split(",");
@@ -195,7 +198,8 @@ const AddEvent = () => {
                   setErrorFecha(false);
                 } else {
                   await createEvent();
-                  
+
+                  setInitialized(true);
                   setErrorDatos(false);
                   setErrorFecha(false);
                   setErrorHoraInicioFinalizacion(false);
@@ -313,7 +317,7 @@ const H1Titulo = styled.h1`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const DivFormulario = styled.div`
   display: flex;
@@ -395,6 +399,7 @@ const BotonMenuPrincipal = styled.div`
     cursor: pointer;
   }
 `;
+
 
 const DivElementosSlot = styled.div`
   display: flex;

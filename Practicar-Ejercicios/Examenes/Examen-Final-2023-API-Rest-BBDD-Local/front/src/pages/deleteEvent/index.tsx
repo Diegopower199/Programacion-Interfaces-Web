@@ -1,28 +1,51 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import React from "react";
 
 
 type GetEvento = {
-  _id: string;
   titulo: string;
   descripcion: string;
   fecha: Date;
   inicio: number;
   fin: number;
   invitados: string[];
+  _id: string;
 };
 
-const Events = () => {
-  const router = useRouter();
+const RemoveEvent = () => {
   const [data, setData] = useState<GetEvento[]>([]);
-  const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({
-    error: undefined,
-  });
+  const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({ error: undefined, });
+  const [idRemove, setIdRemove] = useState<string>("");
+  const [responseRemoveFetch, setResponseRemoveFetch ] = useState<string>("");
 
+  const removeEvent = async (idRemove: string) => {
+    try {
+      const requestOptions = {
+        method: "DELETE",
+      };
+      console.log("requestOptions: ", requestOptions, "\nId remove: ", idRemove);
+
+      const response = await fetch(
+        `http://localhost:8080/deleteEvent/${idRemove}`,
+        requestOptions
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Resultado", result.message);
+        setResponseRemoveFetch(result.message);
+        setErrorBack({ error: undefined });
+      } else {
+        const result = await response.json();
+        setErrorBack({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
+        console.log("Error", await response.json());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
   const allEvents = async () => {
     try {
       const requestOptions = {
@@ -36,13 +59,12 @@ const Events = () => {
 
       if (response.ok) {
         const result = await response.json();
+
+        setData(result); // Esto es asi porque no devolvemos un JSON, si lo devolvemos debemos poner '.' y la variable que pongamos
         console.log("Informacion de result", result);
-        setData(result.eventos);
-        setErrorBack({ error: undefined });
       } else {
-        const result = await response.json();
-        console.log("Error", result.message );
-        setErrorBack({ error: result.message });
+        console.log("Error", await response.statusText);
+        setErrorBack({ error: await response.statusText });
       }
     } catch (error) {
       console.log(error);
@@ -50,17 +72,7 @@ const Events = () => {
   };
 
   useEffect(() => {
-    console.log("Solo estamos la primera vez, despues cada 5 segundos se carga la informacion")
     allEvents();
-    const intervalId = setInterval(() => {
-      console.log("Initialized true");
-      allEvents();
-      console.log("HOLA: ", errorBack.error)
-    }, 5000);
-
-    return () => {
-      clearInterval(intervalId);
-    }
   }, []);
 
   return (
@@ -68,20 +80,18 @@ const Events = () => {
       <Link href={"/"}>
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
-      <GreenBorderMenu>
-      <H1Titulo>Events</H1Titulo>
+      <BlueBorderMenu>
+      <H1Titulo>Remove Event</H1Titulo>
 
-      
-
-      { (errorBack.error !== undefined) ? (
+      {errorBack.error !== undefined ? (
         <>
-            <ErrorMessage>{errorBack.error}</ErrorMessage>
+          <ErrorMessage>{errorBack.error}</ErrorMessage>
         </>
       ) : (
         <>
           { (!data || data.length === 0) ? (
             <>
-                <h1>No hay eventos con la fecha superior o igual a la fecha de hoy</h1>
+              <p>No hay ningun evento a partir de la fecha actual</p>
             </>
           ) : (
             <>
@@ -122,12 +132,18 @@ const Events = () => {
                       </DivElemento>
 
                       <BotonBorrar
-                        onClick={ async () => {
-                            router.push(`/event/${event._id}`)
+                        onClick={ async (e) => {
+                            setIdRemove(event._id)
+                            console.log("Id remove", idRemove)
+                            await removeEvent(event._id);
+                            console.log("todo bien")
+                            await allEvents();
                         }}
                       >
-                        <ParrafoValores>IR A LA PAGINA CON EL ID</ParrafoValores>
-                        
+                        <ImagenesIconos
+                          src={"/trash.png"}
+                          alt={"Esta cargando"}
+                        ></ImagenesIconos>
                       </BotonBorrar>
                     </DivElementosSlot>
                   </>
@@ -137,14 +153,14 @@ const Events = () => {
           )}
         </>
       )}
-      </GreenBorderMenu>
+      </BlueBorderMenu>
     </>
   );
 };
 
-export default Events;
+export default RemoveEvent;
 
-const GreenBorderMenu = styled.div`
+const BlueBorderMenu = styled.div`
   font-weight: 600;
   font-size: 20px;
   padding-top: 20px;
@@ -156,7 +172,7 @@ const GreenBorderMenu = styled.div`
   gap: 15px;
   overflow: hidden;
   white-space: nowrap;
-  border: 7px solid #43c54e;
+  border: 7px solid #3b82f6;
   border-radius: 15px;
   margin: 10px;
 `;
@@ -166,6 +182,67 @@ const H1Titulo = styled.h1`
   display: flex;
   justify-content: center;
   align-items: center;
+`
+
+const DivFormulario = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding: 20px;
+  margin: 20px auto;
+  width: 50%;
+  box-shadow: 0px 0px 10px #aaaaaa;
+`;
+
+const DivElementoFormulario = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin: 3px;
+`;
+
+const InputSubmit = styled.input`
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  font-size: 20px;
+  background: #1a2537;
+  //padding: 15px 20px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  :hover {
+    background: cadetblue;
+  }
+`;
+
+const LabelIdentificar = styled.label`
+  display: block;
+  margin-bottom: 10px;
+  color: #333333;
+  font-weight: bold;
+  margin: 2px;
+`;
+const InputValores = styled.input`
+  padding: 15px;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  //margin-bottom: 20px;
+`;
+
+const ParrafoErrores = styled.p`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px;
+  font-size: 20px;
+  color: red;
 `;
 
 const BotonMenuPrincipal = styled.div`
@@ -185,12 +262,20 @@ const BotonMenuPrincipal = styled.div`
   }
 `;
 
-const ErrorMessage = styled.p`
+export const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
 `;
 
-const BotonBorrar = styled.button`
+export const ItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 600px;
+`;
+
+export const BotonBorrar = styled.button`
   font-weight: 600;
   border-radius: 5px;
   color: white;
@@ -235,8 +320,17 @@ const ParrafoValores = styled.p`
   font-family: Arial, sans-serif;
   font-size: 18px;
   color: #333;
-  line-height: 1.6em;
+  line-height: 1.5em;
   text-align: justify;
   color: #2f2f2f;
   border-radius: 5px;
+`;
+
+const ImagenesIconos = styled.img`
+  margin: 3px;
+  width: 50px;
+  height: 60px;
+  text-align: center;
+  color: #999;
+  box-sizing: border-box;
 `;

@@ -2,15 +2,16 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import React from "react";
 
 type GetEvento = {
+  _id: string;
   titulo: string;
   descripcion: string;
   fecha: Date;
   inicio: number;
   fin: number;
   invitados: string[];
-  _id: string;
 };
 
 const UpdateEvent = () => {
@@ -50,11 +51,30 @@ const UpdateEvent = () => {
 
   const updateEvent = async () => {
     try {
-      const objetoFecha = new Date(updateEventDate);
+      console.log("Update Event Date: ", updateEventDate);
+
+      let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
+
+      let day = partesFecha[0];
+      let month = partesFecha[1];
+      let year = partesFecha[2];
+
+      console.log("Día:", day);
+      console.log("Mes:", month);
+      console.log("Año:", year);
+
+      console.log(new Date(parseInt(year), parseInt(month), parseInt(day)));
+
+      const objetoFecha = new Date(
+        parseInt(year),
+        parseInt(month),
+        parseInt(day)
+      );
+      console.log(objetoFecha);
       const requestOptions = {
         method: "PUT",
         body: JSON.stringify({
-          _id: editIdSelected,
+          id: editIdSelected,
           titulo: updateEventTitle,
           descripcion: updateEventDesc,
           fecha: objetoFecha,
@@ -72,12 +92,12 @@ const UpdateEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
+        console.log("Result response ok true: ", result);
         setErrorBackUpdate({ error: undefined });
       } else {
         const result = await response.json();
+        console.log("Result response ok false: ", result);
         setErrorBackUpdate({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
       }
     } catch (error) {
       console.log(error);
@@ -102,8 +122,9 @@ const UpdateEvent = () => {
         console.log("Informacion de result", result);
         setErrorBackGet({ error: undefined });
       } else {
-        console.log("Error", await response.statusText);
-        setErrorBackGet({ error: await response.statusText });
+        const result = await response.json();
+        console.log("Error", result.message);
+        setErrorBackGet({ error: result.message });
       }
     } catch (error) {
       console.log(error);
@@ -126,7 +147,7 @@ const UpdateEvent = () => {
           <ErrorMessage>{errorBackGet.error}</ErrorMessage>
         ) : (
           <>
-            {data.length === 0 ? (
+            {!data || data.length === 0 ? (
               <>
                 <p>No hay ningun evento a partir de la fecha actual</p>
               </>
@@ -164,6 +185,13 @@ const UpdateEvent = () => {
                           <ParrafoValores>{event.fin}</ParrafoValores>
                         </DivElemento>
 
+                        <DivElemento>
+                          <ParrafoTitulo>Invitados</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.invitados.toString()}
+                          </ParrafoValores>
+                        </DivElemento>
+
                         <BotonActualizar
                           onClick={() => {
                             setEditIdSelected(event._id);
@@ -197,8 +225,9 @@ const UpdateEvent = () => {
         {editIdSelected ? (
           <>
             <DivFormulario>
+              <p>Los campos que tengan * son obligatorios</p>
               <DivElementoFormulario>
-                <LabelIdentificar>Titulo: </LabelIdentificar>
+                <LabelIdentificar>Titulo *: </LabelIdentificar>
                 <InputValores
                   type="text"
                   value={updateEventTitle}
@@ -209,7 +238,7 @@ const UpdateEvent = () => {
                 ></InputValores>
               </DivElementoFormulario>
               <DivElementoFormulario>
-                <LabelIdentificar>Descripcion: </LabelIdentificar>
+                <LabelIdentificar>Descripcion : </LabelIdentificar>
                 <InputValores
                   type="text"
                   value={updateEventDesc}
@@ -221,7 +250,7 @@ const UpdateEvent = () => {
               </DivElementoFormulario>
 
               <DivElementoFormulario>
-                <LabelIdentificar>Fecha: </LabelIdentificar>
+                <LabelIdentificar>Fecha *: </LabelIdentificar>
                 <InputValores
                   type="date"
                   defaultValue={auxDate.toISOString().substring(0, 10)}
@@ -233,7 +262,7 @@ const UpdateEvent = () => {
               </DivElementoFormulario>
 
               <DivElementoFormulario>
-                <LabelIdentificar>Hora de inicio </LabelIdentificar>
+                <LabelIdentificar>Hora de inicio *: </LabelIdentificar>
                 <InputValores
                   type="number"
                   value={updateEventStart}
@@ -256,7 +285,7 @@ const UpdateEvent = () => {
               </DivElementoFormulario>
 
               <DivElementoFormulario>
-                <LabelIdentificar>Hora de finalizacion </LabelIdentificar>
+                <LabelIdentificar>Hora de finalizacion *:</LabelIdentificar>
                 <InputValores
                   type="number"
                   value={updateEventEnd}
@@ -297,18 +326,17 @@ const UpdateEvent = () => {
 
               <InputSubmit
                 type="submit"
-                value={"Añadir evento"}
+                value={"Actualizar evento"}
                 onClick={async () => {
                   try {
                     let yearSeleccionado = updateEventDate.slice(0, 4);
                     if (
                       updateEventTitle === "" ||
-                      updateEventDesc === "" ||
                       updateEventDate === "" ||
                       updateEventStart === "" ||
                       updateEventEnd === ""
                     ) {
-                      console.log("Error de datos");
+                      console.log("Faltan datos por poner");
                       setErrorDatos(true);
                       setErrorHoraInicioFinalizacion(false);
                       setErrorFecha(false);
@@ -324,7 +352,13 @@ const UpdateEvent = () => {
                       setErrorFecha(false);
                     } else {
                       await updateEvent();
-                      setEditIdSelected("");
+                      if (errorBackUpdate.error === undefined) {
+                        setEditIdSelected("");
+                      }
+                      setErrorHoraInicioFinalizacion(false);
+                      setErrorDatos(false);
+                      setErrorFecha(false);
+
                       await allEvents();
                     }
                   } catch {}
@@ -333,7 +367,7 @@ const UpdateEvent = () => {
 
               {errorDatos ? (
                 <>
-                  <ParrafoErrores>Hay un error de datos</ParrafoErrores>
+                  <ParrafoErrores>Faltan datos obligatorios por poner</ParrafoErrores>
                 </>
               ) : errorFecha ? (
                 <>
@@ -469,20 +503,12 @@ const BotonMenuPrincipal = styled.div`
   }
 `;
 
-export const ErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
 `;
 
-export const ItemsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  width: 600px;
-`;
-
-export const BotonActualizar = styled.button`
+const BotonActualizar = styled.button`
   font-weight: 600;
   border-radius: 5px;
   color: white;

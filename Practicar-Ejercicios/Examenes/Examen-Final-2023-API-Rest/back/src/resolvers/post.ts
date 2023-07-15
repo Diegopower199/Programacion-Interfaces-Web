@@ -91,7 +91,7 @@ export const addEvent  = async(context: PostEventContext) => {
 
         if(comprobar.length !== 0){
             context.response.body = {
-                message: "SOLAPAN EVENTOS!"
+                message: "Los eventos se solapan!"
             };
             context.response.status = 400;
             return;

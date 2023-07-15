@@ -1,17 +1,16 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import React from "react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 type GetEvento = {
-  _id: string;
   titulo: string;
   descripcion: string;
   fecha: Date;
   inicio: number;
   fin: number;
   invitados: string[];
+  _id: string;
 };
 
 const RemoveEvent = () => {
@@ -182,12 +181,12 @@ const RemoveEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Result response ok true: ", result);
+        console.log(result);
         setErrorBackUpdateEvent({ error: undefined });
       } else {
         const result = await response.json();
-        console.log("Result response ok false: ", result);
         setErrorBackUpdateEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
+        console.log("Error", await response.json());
       }
     } catch (error) {
       console.log(error);
@@ -208,7 +207,7 @@ const RemoveEvent = () => {
       if (response.ok) {
         const result = await response.json();
 
-        setData(result.eventos);
+        setData(result); // Esto es asi porque no devolvemos un JSON, si lo devolvemos debemos poner '.' y la variable que pongamos
         setErrorBackGetEvent({ error: undefined });
         console.log("Informacion de result", result);
       } else {
@@ -238,7 +237,7 @@ const RemoveEvent = () => {
           </>
         ) : (
           <>
-            { (!data || data.length === 0) ? (
+            {!data || data.length === 0 ? (
               <>
                 <p>No hay ningun evento a partir de la fecha actual</p>
               </>
@@ -284,7 +283,7 @@ const RemoveEvent = () => {
                         </DivElemento>
 
                         <BotonBorrar
-                          onClick={ async () => {
+                          onClick={async (e) => {
                             setIdRemove(event._id);
                             console.log("Id remove", idRemove);
                             await removeEvent(event._id);
@@ -476,7 +475,9 @@ const RemoveEvent = () => {
 
               {errorDatosUpdateEvent ? (
                 <>
-                  <ParrafoErrores>Faltan datos obligatorios por poner</ParrafoErrores>
+                  <ParrafoErrores>
+                    Faltan datos obligatorios por poner
+                  </ParrafoErrores>
                 </>
               ) : errorFechaUpdateEvent ? (
                 <>
@@ -647,7 +648,7 @@ const RemoveEvent = () => {
           {errorDatosCreateEvent ? (
             <>
               <ParrafoErrores>
-              Faltan datos obligatorios por poner
+                Faltan datos obligatorios por poner
               </ParrafoErrores>
             </>
           ) : errorFechaCreateEvent ? (
@@ -818,6 +819,14 @@ const BotonMenuPrincipal = styled.div`
 const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
+`;
+
+const ItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 600px;
 `;
 
 const BotonBorrar = styled.button`

@@ -1,17 +1,17 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import React from "react";
 
 
 type GetEvento = {
+  _id: string;
   titulo: string;
   descripcion: string;
   fecha: Date;
   inicio: number;
   fin: number;
   invitados: string[];
-  _id: string;
 };
 
 const RemoveEvent = () => {
@@ -64,8 +64,9 @@ const RemoveEvent = () => {
         setData(result.eventos);
         console.log("Informacion de result", result);
       } else {
-        console.log("Error", await response.statusText);
-        setErrorBack({ error: await response.statusText });
+        const result = await response.json();
+        console.log("Error", result.message );
+        setErrorBack({ error: result.message });
       }
     } catch (error) {
       console.log(error);
@@ -90,7 +91,7 @@ const RemoveEvent = () => {
         </>
       ) : (
         <>
-          {data.length === 0 ? (
+          { (!data || data.length === 0) ? (
             <>
               <p>No hay ningun evento a partir de la fecha actual</p>
             </>
@@ -185,67 +186,6 @@ const H1Titulo = styled.h1`
   align-items: center;
 `
 
-const DivFormulario = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-direction: column;
-  background-color: #ffffff;
-  padding: 20px;
-  margin: 20px auto;
-  width: 50%;
-  box-shadow: 0px 0px 10px #aaaaaa;
-`;
-
-const DivElementoFormulario = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  margin: 3px;
-`;
-
-const InputSubmit = styled.input`
-  border: none;
-  padding: 10px 20px;
-  color: white;
-  font-size: 20px;
-  background: #1a2537;
-  //padding: 15px 20px;
-  border-radius: 5px;
-  box-sizing: border-box;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  :hover {
-    background: cadetblue;
-  }
-`;
-
-const LabelIdentificar = styled.label`
-  display: block;
-  margin-bottom: 10px;
-  color: #333333;
-  font-weight: bold;
-  margin: 2px;
-`;
-const InputValores = styled.input`
-  padding: 15px;
-  border: 1px solid #aaaaaa;
-  border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
-  //margin-bottom: 20px;
-`;
-
-const ParrafoErrores = styled.p`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 4px;
-  font-size: 20px;
-  color: red;
-`;
-
 const BotonMenuPrincipal = styled.div`
   border: 1px solid #2e518b; /*anchura, estilo y color borde*/
   padding: 10px; /*espacio alrededor texto*/
@@ -263,20 +203,12 @@ const BotonMenuPrincipal = styled.div`
   }
 `;
 
-export const ErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
 `;
 
-export const ItemsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  width: 600px;
-`;
-
-export const BotonBorrar = styled.button`
+const BotonBorrar = styled.button`
   font-weight: 600;
   border-radius: 5px;
   color: white;
