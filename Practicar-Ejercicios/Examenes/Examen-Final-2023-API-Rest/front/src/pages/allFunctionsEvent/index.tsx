@@ -153,11 +153,11 @@ const RemoveEvent = () => {
       console.log("Mes:", month);
       console.log("Año:", year);
 
-      console.log(new Date(parseInt(year), parseInt(month), parseInt(day)));
+      console.log(new Date(parseInt(year), parseInt(month) -1, parseInt(day)));
 
       const objetoFecha = new Date(
         parseInt(year),
-        parseInt(month),
+        parseInt(month) -1,
         parseInt(day)
       );
       console.log(objetoFecha);

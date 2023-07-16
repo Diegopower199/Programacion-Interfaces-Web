@@ -63,11 +63,11 @@ const UpdateEvent = () => {
       console.log("Mes:", month);
       console.log("Año:", year);
 
-      console.log(new Date(parseInt(year), parseInt(month), parseInt(day)));
+      console.log(new Date(parseInt(year), parseInt(month) -1, parseInt(day)));
 
       const objetoFecha = new Date(
         parseInt(year),
-        parseInt(month),
+        parseInt(month) -1,
         parseInt(day)
       );
       console.log(objetoFecha);
@@ -352,6 +352,7 @@ const UpdateEvent = () => {
                       setErrorFecha(false);
                     } else {
                       await updateEvent();
+                      console.log(errorBackUpdate.error)
                       if (errorBackUpdate.error === undefined) {
                         setEditIdSelected("");
                       }

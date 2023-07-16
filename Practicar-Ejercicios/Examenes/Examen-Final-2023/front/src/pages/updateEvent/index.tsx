@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 export type UpdateEventResponse = {
@@ -24,8 +24,6 @@ export type QueryResponse = {
     endHour: number;
   }[];
 };
-
-let ErrorBack: { error?: string } = { error: undefined };
 
 const UpdateEvent = () => {
   const mutation = gql`
@@ -101,241 +99,305 @@ const UpdateEvent = () => {
       <Link href={"/"}>
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
-      <h1>Update Event</h1>
+      <RedBorderMenu>
+        <H1Titulo>Update Event</H1Titulo>
 
-      {queryAnswer.error ? (
-        <ErrorMessage>{queryAnswer.error.message}</ErrorMessage>
-      ) : (
-        <>
-          {queryAnswer.data?.events.length === 0 ? (
-            <>
-              <p>No hay ningun evento a partir de la fecha actual</p>
-            </>
-          ) : (
-            <>
-              {queryAnswer.data?.events.map((event) => {
-                return (
-                  <>
-                    <DivElementosSlot>
-                      <DivElemento>
-                        <ParrafoTitulo>Title</ParrafoTitulo>
-                        <ParrafoValores>{event.title}</ParrafoValores>
-                      </DivElemento>
-
-                      <DivElemento>
-                        <ParrafoTitulo>Description</ParrafoTitulo>
-                        <ParrafoValores>{event.description}</ParrafoValores>
-                      </DivElemento>
-
-                      <DivElemento>
-                        <ParrafoTitulo>Date</ParrafoTitulo>
-                        <ParrafoValores>
-                          {event.date.toString().substring(0, 10)}
-                        </ParrafoValores>
-                      </DivElemento>
-
-                      <DivElemento>
-                        <ParrafoTitulo>Start hour</ParrafoTitulo>
-                        <ParrafoValores>{event.startHour}</ParrafoValores>
-                      </DivElemento>
-
-                      <DivElemento>
-                        <ParrafoTitulo>End hour</ParrafoTitulo>
-                        <ParrafoValores>{event.endHour}</ParrafoValores>
-                      </DivElemento>
-
-                      <BotonActualizar
-                        onClick={() => {
-                          const date = new Date(event.date);
-                          setEditSelected(event.id);
-                          setAuxDate(new Date(event.date));
-                          setUpdateEventDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
-                          setUpdateEventTitle(event.title);
-                          setUpdateEventDesc(event.description);
-                          setUpdateEventStart(`${event.startHour}`);
-                          setUpdateEventEnd(`${event.endHour}`);
-                        }}
-                      >
-                        <ImagenesIconos
-                          src={"/reservar.png"}
-                          alt={"Esta cargando"}
-                        ></ImagenesIconos>
-                      </BotonActualizar>
-                    </DivElementosSlot>
-                  </>
-                );
-              })}
-            </>
-          )}
-        </>
-      )}
-
-      {updateEventDate}
-
-      {editSelected ? (
-        <>
-          <DivFormulario>
-            <DivElementoFormulario>
-              <LabelIdentificar>Titulo: </LabelIdentificar>
-              <InputValores
-                type="text"
-                value={updateEventTitle}
-                placeholder="Titulo"
-                onChange={(e) => {
-                  setUpdateEventTitle(e.target.value);
-                }}
-              ></InputValores>
-            </DivElementoFormulario>
-            <DivElementoFormulario>
-              <LabelIdentificar>Descripcion: </LabelIdentificar>
-              <InputValores
-                type="text"
-                value={updateEventDesc}
-                placeholder="Descripcion"
-                onChange={(e) => {
-                  setUpdateEventDesc(e.target.value);
-                }}
-              ></InputValores>
-            </DivElementoFormulario>
-
-            <DivElementoFormulario>
-              <LabelIdentificar>Fecha: </LabelIdentificar>
-              <InputValores
-                type="date"
-                defaultValue={auxDate.toISOString().substring(0, 10)}
-                placeholder="Date"
-                onChange={(e) => {
-                  setUpdateEventDate(e.target.value);
-                  console.log(updateEventDate)
-                }}
-              ></InputValores>
-            </DivElementoFormulario>
-
-            <DivElementoFormulario>
-              <LabelIdentificar>Hora de inicio </LabelIdentificar>
-              <InputValores
-                type="number"
-                value={updateEventStart}
-                placeholder="Hora de inicio"
-                onChange={(e) => {
-                  console.log(Number(e.target.value));
-                  if (e.target.value.includes("-")) {
-                    e.target.value = "";
-                  } else if (Number(e.target.value) >= 25) {
-                    e.target.value = e.target.value.slice(0, 2);
-                    if (Number(e.target.value) > 24) {
-                      e.target.value = e.target.value.slice(0, 1);
-                    }
-                    console.log("Cambio de valor", e.target.value);
-                  } else {
-                    setUpdateEventStart(e.target.value);
-                  }
-                }}
-              ></InputValores>
-            </DivElementoFormulario>
-
-            <DivElementoFormulario>
-              <LabelIdentificar>Hora de finalizacion </LabelIdentificar>
-              <InputValores
-                type="number"
-                value={updateEventEnd}
-                placeholder="Hora de finalizacion"
-                onChange={(e) => {
-                  console.log(Number(e.target.value));
-                  if (e.target.value.includes("-")) {
-                    e.target.value = "";
-                  } else if (Number(e.target.value) >= 25) {
-                    e.target.value = e.target.value.slice(0, 2);
-                    if (Number(e.target.value) > 24) {
-                      e.target.value = e.target.value.slice(0, 1);
-                    }
-                    console.log("Cambio de valor", e.target.value);
-                  } else {
-                    setUpdateEventEnd(e.target.value);
-                  }
-                }}
-              ></InputValores>
-            </DivElementoFormulario>
-            <InputSubmit
-              type="submit"
-              value={"Añadir evento"}
-              onClick={async () => {
-                try {
-                  let yearSeleccionado = updateEventDate.slice(0, 4);
-                  if (
-                    updateEventTitle === "" ||
-                    updateEventDesc === "" ||
-                    updateEventDate === "" ||
-                    updateEventStart === "" ||
-                    updateEventEnd === ""
-                  ) {
-                    console.log("Error de datos");
-                    setErrorDatos(true);
-                    setErrorHoraInicioFinalizacion(false);
-                    setErrorFecha(false);
-                  } else if (Number(yearSeleccionado) < 1970) {
-                    setErrorFecha(true);
-                    setErrorDatos(false);
-                    setErrorHoraInicioFinalizacion(false);
-                  } else if (
-                    Number(updateEventStart) >= Number(updateEventEnd)
-                  ) {
-                    setErrorHoraInicioFinalizacion(true);
-                    setErrorDatos(false);
-                    setErrorFecha(false);
-                  } else {
-                    await updateEventMutation({
-                      variables: {
-                        updateEventId: editSelected,
-                        date: new Date(updateEventDate),
-                        title: updateEventTitle,
-                        description: updateEventDesc,
-                        startHour: parseInt(updateEventStart),
-                        endHour: parseInt(updateEventEnd),
-                      },
-                    });
-                    setEditSelected('');
-                    await queryAnswer.refetch();
-                  }
-                } catch {}
-              }}
-            ></InputSubmit>
-
-            {errorDatos ? (
+        {queryAnswer.error ? (
+          <ErrorMessage>{queryAnswer.error.message}</ErrorMessage>
+        ) : (
+          <>
+            {queryAnswer.data?.events.length === 0 ? (
               <>
-                <ParrafoErrores>Hay un error de datos</ParrafoErrores>
-              </>
-            ) : errorFecha ? (
-              <>
-                <ParrafoErrores>
-                  El año tiene que ser igua o superior a 1970
-                </ParrafoErrores>
-              </>
-            ) : errorHoraInicioFinalizacion ? (
-              <>
-                <ParrafoErrores>
-                  La hora de inicio es mayor o igual que la hora de finalizacion
-                </ParrafoErrores>
-              </>
-            ) : updateEventMutationAnswer.error ? (
-              <>
-                <ParrafoErrores>{ErrorBack.error}</ParrafoErrores>
+                <p>No hay ningun evento a partir de la fecha actual</p>
               </>
             ) : (
-              <></>
+              <>
+                {queryAnswer.data?.events.map((event) => {
+                  return (
+                    <>
+                      <DivElementosSlot>
+                        <DivElemento>
+                          <ParrafoTitulo>Title</ParrafoTitulo>
+                          <ParrafoValores>{event.title}</ParrafoValores>
+                        </DivElemento>
+
+                        <DivElemento>
+                          <ParrafoTitulo>Description</ParrafoTitulo>
+                          <ParrafoValores>{event.description}</ParrafoValores>
+                        </DivElemento>
+
+                        <DivElemento>
+                          <ParrafoTitulo>Date</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.date.toString().substring(0, 10)}
+                          </ParrafoValores>
+                        </DivElemento>
+
+                        <DivElemento>
+                          <ParrafoTitulo>Start hour</ParrafoTitulo>
+                          <ParrafoValores>{event.startHour}</ParrafoValores>
+                        </DivElemento>
+
+                        <DivElemento>
+                          <ParrafoTitulo>End hour</ParrafoTitulo>
+                          <ParrafoValores>{event.endHour}</ParrafoValores>
+                        </DivElemento>
+
+                        <BotonActualizar
+                          onClick={() => {
+                            const date = new Date(event.date);
+                            setEditSelected(event.id);
+                            setAuxDate(new Date(event.date));
+                            setUpdateEventDate(
+                              `${date.getDate()}/${
+                                date.getMonth() + 1
+                              }/${date.getFullYear()}`
+                            );
+                            setUpdateEventTitle(event.title);
+                            setUpdateEventDesc(event.description);
+                            setUpdateEventStart(`${event.startHour}`);
+                            setUpdateEventEnd(`${event.endHour}`);
+                          }}
+                        >
+                          <ImagenesIconos
+                            src={"/reservar.png"}
+                            alt={"Esta cargando"}
+                          ></ImagenesIconos>
+                        </BotonActualizar>
+                      </DivElementosSlot>
+                    </>
+                  );
+                })}
+              </>
             )}
-          </DivFormulario>
-        </>
-      ) : (
-        <>
-          <div></div>
-        </>
-      )}
+          </>
+        )}
+
+        {editSelected ? (
+          <>
+            <DivFormulario>
+              <p>Los campos que tengan * son obligatorios</p>
+              <DivElementoFormulario>
+                <LabelIdentificar>Titulo *: </LabelIdentificar>
+                <InputValores
+                  type="text"
+                  value={updateEventTitle}
+                  placeholder="Titulo"
+                  onChange={(e) => {
+                    setUpdateEventTitle(e.target.value);
+                  }}
+                ></InputValores>
+              </DivElementoFormulario>
+              <DivElementoFormulario>
+                <LabelIdentificar>Descripcion *: </LabelIdentificar>
+                <InputValores
+                  type="text"
+                  value={updateEventDesc}
+                  placeholder="Descripcion"
+                  onChange={(e) => {
+                    setUpdateEventDesc(e.target.value);
+                  }}
+                ></InputValores>
+              </DivElementoFormulario>
+
+              <DivElementoFormulario>
+                <LabelIdentificar>Fecha *: </LabelIdentificar>
+                <InputValores
+                  type="date"
+                  defaultValue={auxDate.toISOString().substring(0, 10)}
+                  placeholder="Date"
+                  onChange={(e) => {
+                    setUpdateEventDate(e.target.value);
+                    console.log(updateEventDate);
+                  }}
+                ></InputValores>
+              </DivElementoFormulario>
+
+              <DivElementoFormulario>
+                <LabelIdentificar>Hora de inicio *: </LabelIdentificar>
+                <InputValores
+                  type="number"
+                  value={updateEventStart}
+                  placeholder="Hora de inicio"
+                  onChange={(e) => {
+                    console.log(Number(e.target.value));
+                    if (e.target.value.includes("-")) {
+                      e.target.value = "";
+                    } else if (Number(e.target.value) >= 25) {
+                      e.target.value = e.target.value.slice(0, 2);
+                      if (Number(e.target.value) > 24) {
+                        e.target.value = e.target.value.slice(0, 1);
+                      }
+                      console.log("Cambio de valor", e.target.value);
+                    } else {
+                      setUpdateEventStart(e.target.value);
+                    }
+                  }}
+                ></InputValores>
+              </DivElementoFormulario>
+
+              <DivElementoFormulario>
+                <LabelIdentificar>Hora de finalizacion *:</LabelIdentificar>
+                <InputValores
+                  type="number"
+                  value={updateEventEnd}
+                  placeholder="Hora de finalizacion"
+                  onChange={(e) => {
+                    console.log(Number(e.target.value));
+                    if (e.target.value.includes("-")) {
+                      e.target.value = "";
+                    } else if (Number(e.target.value) >= 25) {
+                      e.target.value = e.target.value.slice(0, 2);
+                      if (Number(e.target.value) > 24) {
+                        e.target.value = e.target.value.slice(0, 1);
+                      }
+                      console.log("Cambio de valor", e.target.value);
+                    } else {
+                      setUpdateEventEnd(e.target.value);
+                    }
+                  }}
+                ></InputValores>
+              </DivElementoFormulario>
+              <InputSubmit
+                type="submit"
+                value={"Actualizar evento"}
+                onClick={async () => {
+                  try {
+                    let yearSeleccionado = updateEventDate.slice(0, 4);
+                    if (
+                      updateEventTitle === "" ||
+                      updateEventDesc === "" ||
+                      updateEventDate === "" ||
+                      updateEventStart === "" ||
+                      updateEventEnd === ""
+                    ) {
+                      console.log("Error de datos");
+                      setErrorDatos(true);
+                      setErrorHoraInicioFinalizacion(false);
+                      setErrorFecha(false);
+                    } else if (Number(yearSeleccionado) < 1970) {
+                      setErrorFecha(true);
+                      setErrorDatos(false);
+                      setErrorHoraInicioFinalizacion(false);
+                    } else if (
+                      Number(updateEventStart) >= Number(updateEventEnd)
+                    ) {
+                      setErrorHoraInicioFinalizacion(true);
+                      setErrorDatos(false);
+                      setErrorFecha(false);
+                    } else {
+                      let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
+
+                      let day = partesFecha[0];
+                      let month = partesFecha[1];
+                      let year = partesFecha[2];
+
+                      console.log("Día:", day);
+                      console.log("Mes:", month);
+                      console.log("Año:", year);
+
+                      console.log(
+                        new Date(
+                          parseInt(year),
+                          parseInt(month) - 1,
+                          parseInt(day)
+                        )
+                      );
+
+                      const objetoFecha = new Date(
+                        parseInt(year),
+                        parseInt(month) - 1,
+                        parseInt(day)
+                      );
+                      console.log(objetoFecha);
+
+                      await updateEventMutation({
+                        variables: {
+                          updateEventId: editSelected,
+                          title: updateEventTitle,
+                          description: updateEventDesc,
+                          date: objetoFecha,
+                          startHour: parseInt(updateEventStart),
+                          endHour: parseInt(updateEventEnd),
+                        },
+                      });
+                      if (updateEventMutationAnswer.error === undefined) {
+                        setEditSelected("");
+                      }
+                      setErrorHoraInicioFinalizacion(false);
+                      setErrorDatos(false);
+                      setErrorFecha(false);
+                      //console.log("he llegado")
+
+                      await queryAnswer.refetch();
+                    }
+                  } catch {}
+                }}
+              ></InputSubmit>
+
+              {errorDatos ? (
+                <>
+                  <ParrafoErrores>
+                    Faltan datos obligatorios por poner
+                  </ParrafoErrores>
+                </>
+              ) : errorFecha ? (
+                <>
+                  <ParrafoErrores>
+                    El año tiene que ser igua o superior a 1970
+                  </ParrafoErrores>
+                </>
+              ) : errorHoraInicioFinalizacion ? (
+                <>
+                  <ParrafoErrores>
+                    La hora de inicio es mayor o igual que la hora de
+                    finalizacion
+                  </ParrafoErrores>
+                </>
+              ) : updateEventMutationAnswer.error ? (
+                <>
+                  <ParrafoErrores>
+                    {updateEventMutationAnswer.error.message}
+                  </ParrafoErrores>
+                </>
+              ) : (
+                <></>
+              )}
+            </DivFormulario>
+          </>
+        ) : (
+          <></>
+        )}
+      </RedBorderMenu>
     </>
   );
 };
 
 export default UpdateEvent;
+
+const RedBorderMenu = styled.div`
+  font-weight: 600;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 7px solid #e72720;
+  border-radius: 15px;
+  margin: 10px;
+`;
+
+const H1Titulo = styled.h1`
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const DivFormulario = styled.div`
   display: flex;
@@ -354,6 +416,7 @@ const DivElementoFormulario = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: row;
+
   margin: 3px;
 `;
 

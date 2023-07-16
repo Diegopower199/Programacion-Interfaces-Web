@@ -32,14 +32,14 @@ const RemoveEvent = () => {
       );
 
       if (response.ok) {
-        const result = await response.json();
-        console.log("Resultado", result.message);
-        setResponseRemoveFetch(result.message);
+        const result = await response.text();
+        console.log("Resultado", result);
+        setResponseRemoveFetch(result);
         setErrorBack({ error: undefined });
       } else {
-        const result = await response.json();
-        setErrorBack({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
+        const result = await response.text();
+        setErrorBack({ error: result }); 
+        console.log("Error", result);
       }
     } catch (error) {
       console.log(error);

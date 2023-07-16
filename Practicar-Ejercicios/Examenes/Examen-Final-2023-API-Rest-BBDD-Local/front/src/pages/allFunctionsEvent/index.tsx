@@ -13,20 +13,22 @@ type GetEvento = {
   _id: string;
 };
 
-const RemoveEvent = () => {
+let errorBackUpdateEvent: { error: string | undefined } = { error: undefined };
+//let errorBackCreateEvent: { error: string | undefined } = { error: undefined };
+
+const allFunctionsEvent = () => {
   const [data, setData] = useState<GetEvento[]>([]);
   const [errorBackGetEvent, setErrorBackGetEvent] = useState<{
     error: string | undefined;
   }>({ error: undefined });
-  const [errorBackCreateEvent, setErrorBackCreateEvent] = useState<{
-    error: string | undefined;
-  }>({ error: undefined });
+  
   const [errorBackDeleteEvent, setErrorBackDeleteEvent] = useState<{
     error: string | undefined;
   }>({ error: undefined });
-  const [errorBackUpdateEvent, setErrorBackUpdateEvent] = useState<{
-    error: string | undefined;
-  }>({ error: undefined });
+
+  const [errorBackCreateEvent, setErrorBackCreateEvent] = useState<{ error: string | undefined }>({
+    error: undefined,
+  });
 
   const [errorFechaUpdateEvent, setErrorFechaUpdateEvent] =
     useState<boolean>(false);
@@ -97,9 +99,9 @@ const RemoveEvent = () => {
         console.log(result);
         setErrorBackCreateEvent({ error: undefined });
       } else {
-        const result = await response.json();
-        setErrorBackCreateEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
+        const result = await response.text();
+        setErrorBackCreateEvent({ error: result }); // Esto es porque esta así en el back, un json con una variable que es message
+        console.log("Error", result);
       }
     } catch (error) {
       console.log(error);
@@ -124,14 +126,14 @@ const RemoveEvent = () => {
       );
 
       if (response.ok) {
-        const result = await response.json();
-        console.log("Resultado", result.message);
-        setResponseRemoveFetch(result.message);
+        const result = await response.text();
+        console.log("Resultado", result);
+        setResponseRemoveFetch(result);
         setErrorBackDeleteEvent({ error: undefined });
       } else {
-        const result = await response.json();
-        setErrorBackDeleteEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
+        const result = await response.text();
+        setErrorBackDeleteEvent({ error: result }); 
+        console.log("Error", result);
       }
     } catch (error) {
       console.log(error);
@@ -142,24 +144,42 @@ const RemoveEvent = () => {
     try {
       console.log("Update Event Date: ", updateEventDate);
 
+      // AQUI TENEMOS QUE HACER QUE EL DIA SE ACTUALICE BIEN
+
       let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
+      let day = "";
+      let month = "";
+      let year = "";
 
-      let day = partesFecha[0];
-      let month = partesFecha[1];
-      let year = partesFecha[2];
+      let fechaCorrecta = "";
 
-      console.log("Día:", day);
-      console.log("Mes:", month);
-      console.log("Año:", year);
+      if (updateEventDate.includes("/")) {
+        day = partesFecha[0];
+        month = partesFecha[1];
+        year = partesFecha[2];
 
-      console.log(new Date(parseInt(year), parseInt(month), parseInt(day)));
+        console.log("Día:", day, "Mes:", month, "Año:", year);
+        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day
+          .toString()
+          .padStart(2, "0")}`;
+        console.log("Fecha correcta: ", fechaCorrecta);
+      } else if (updateEventDate.includes("-")) {
+        year = partesFecha[0];
+        month = partesFecha[1];
+        day = partesFecha[2];
 
-      const objetoFecha = new Date(
-        parseInt(year),
-        parseInt(month),
-        parseInt(day)
-      );
-      console.log(objetoFecha);
+        console.log("Día:", day, "Mes:", month, "Año:", year);
+
+        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day
+          .toString()
+          .padStart(2, "0")}`;
+        console.log("Fecha correcta: ", fechaCorrecta);
+      }
+
+      const objetoFecha = new Date(fechaCorrecta);
+      console.log("Objeto fecha: ", objetoFecha);
+
+      console.log("descripcion: ", updateEventDesc, "     invitados: ", updateEventInvitados)
       const requestOptions = {
         method: "PUT",
         body: JSON.stringify({
@@ -172,7 +192,8 @@ const RemoveEvent = () => {
           invitados: updateEventInvitados,
         }),
       };
-      console.log("requestOptions: ", requestOptions);
+
+      console.log("requestOptions: ", requestOptions.body);
 
       const response = await fetch(
         "http://localhost:8080/updateEvent",
@@ -181,12 +202,12 @@ const RemoveEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
-        setErrorBackUpdateEvent({ error: undefined });
+        console.log("Resultado: ", result);
+        errorBackUpdateEvent = { error: undefined };
       } else {
-        const result = await response.json();
-        setErrorBackUpdateEvent({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
+        const result = await response.text();
+        console.log("Error", result);
+        errorBackUpdateEvent = { error: result };
       }
     } catch (error) {
       console.log(error);
@@ -211,8 +232,9 @@ const RemoveEvent = () => {
         setErrorBackGetEvent({ error: undefined });
         console.log("Informacion de result", result);
       } else {
-        console.log("Error", await response.statusText);
-        setErrorBackGetEvent({ error: await response.statusText });
+        const result = await response.text();
+        console.log("Error", result);
+        setErrorBackGetEvent({ error: result });
       }
     } catch (error) {
       console.log(error);
@@ -299,8 +321,9 @@ const RemoveEvent = () => {
 
                         <BotonActualizar
                           onClick={() => {
+                            
                             setEditIdSelected(event._id);
-                            setAuxDate(new Date(event.fecha));
+                            setAuxDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()))
                             setUpdateEventDate(
                               `${date.getDate()}/${
                                 date.getMonth() + 1
@@ -631,6 +654,8 @@ const RemoveEvent = () => {
                 } else {
                   await createEvent();
 
+                  await allEvents();
+
                   setErrorDatosCreateEvent(false);
                   setErrorFechaCreateEvent(false);
                   setErrorHoraInicioFinalizacionCreateEvent(false);
@@ -668,7 +693,7 @@ const RemoveEvent = () => {
               <ParrafoErrores>{errorBackCreateEvent.error}</ParrafoErrores>
             </>
           ) : (
-            <></>
+            <>{errorBackCreateEvent.error}</>
           )}
         </DivFormulario>
       </PurpleBorderMenu>
@@ -676,7 +701,7 @@ const RemoveEvent = () => {
   );
 };
 
-export default RemoveEvent;
+export default allFunctionsEvent;
 
 const GreenBorderMenu = styled.div`
   font-weight: 600;

@@ -12,17 +12,15 @@ type GetEvento = {
   invitados: string[];
 };
 
+let errorBackUpdate: { error: string | undefined } = { error: undefined };
+
 const UpdateEvent = () => {
   const [errorBackGet, setErrorBackGet] = useState<{
     error: string | undefined;
   }>({
     error: undefined,
   });
-  const [errorBackUpdate, setErrorBackUpdate] = useState<{
-    error: string | undefined;
-  }>({
-    error: undefined,
-  });
+  
 
   const [errorFecha, setErrorFecha] = useState<boolean>(false);
   const [errorHoraInicioFinalizacion, setErrorHoraInicioFinalizacion] =
@@ -51,24 +49,38 @@ const UpdateEvent = () => {
     try {
       console.log("Update Event Date: ", updateEventDate);
 
+      // AQUI TENEMOS QUE HACER QUE EL DIA SE ACTUALICE BIEN
+
       let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
+      let day = "";
+      let month = "";
+      let year = "";
 
-      let day = partesFecha[0];
-      let month = partesFecha[1];
-      let year = partesFecha[2];
+      let fechaCorrecta = "";
 
-      console.log("Día:", day);
-      console.log("Mes:", month);
-      console.log("Año:", year);
+      if (updateEventDate.includes("/")) {
+        day = partesFecha[0];
+        month = partesFecha[1];
+        year = partesFecha[2];
 
-      console.log(new Date(parseInt(year), parseInt(month), parseInt(day)));
+        console.log("Día:", day, "Mes:", month, "Año:", year);
+        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
+        console.log("Fecha correcta: ", fechaCorrecta)
+        
+      } else if (updateEventDate.includes("-")) {
+        year = partesFecha[0];
+        month = partesFecha[1];
+        day = partesFecha[2];
 
-      const objetoFecha = new Date(
-        parseInt(year),
-        parseInt(month),
-        parseInt(day)
-      );
-      console.log(objetoFecha);
+        console.log("Día:", day, "Mes:", month, "Año:", year);
+
+        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
+        console.log("Fecha correcta: ", fechaCorrecta)
+
+      }
+
+      const objetoFecha = new Date(fechaCorrecta);
+      console.log("Objeto fecha: ", objetoFecha);
       const requestOptions = {
         method: "PUT",
         body: JSON.stringify({
@@ -92,10 +104,11 @@ const UpdateEvent = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Resultado: ", result);
-        setErrorBackUpdate({ error: undefined });
+        errorBackUpdate = ({ error: undefined });
       } else {
-        console.log("Error", await response.text());
-        setErrorBackUpdate({ error: await response.text() });
+        const result = await response.text()
+        console.log("Error", result);
+        errorBackUpdate = ({ error: result });
       }
     } catch (error) {
       console.log(error);
@@ -192,12 +205,9 @@ const UpdateEvent = () => {
                         <BotonActualizar
                           onClick={() => {
                             setEditIdSelected(event._id);
-                            setAuxDate(new Date(event.fecha));
-                            setUpdateEventDate(
-                              `${date.getDate()}/${
-                                date.getMonth() + 1
-                              }/${date.getFullYear()}`
-                            );
+                            //setAuxDate(new Date(event.fecha));
+                            setAuxDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()))
+                            setUpdateEventDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
                             setUpdateEventTitle(event.titulo);
                             setUpdateEventDesc(event.descripcion);
                             setUpdateEventStart(`${event.inicio}`);
@@ -218,6 +228,9 @@ const UpdateEvent = () => {
             )}
           </>
         )}
+
+        {auxDate.getFullYear()} {auxDate.getMonth()} {auxDate.getDate()} <br/>
+        {updateEventDate}
 
         {editIdSelected ? (
           <>
@@ -349,14 +362,18 @@ const UpdateEvent = () => {
                       setErrorFecha(false);
                     } else {
                       await updateEvent();
+                      console.log(errorBackUpdate);
                       if (errorBackUpdate.error === undefined) {
                         setEditIdSelected("");
                       }
+
+                      console.log(errorBackUpdate);
                       setErrorHoraInicioFinalizacion(false);
                       setErrorDatos(false);
                       setErrorFecha(false);
 
                       await allEvents();
+                      console.log(errorBackUpdate);
                     }
                   } catch {}
                 }}
@@ -364,7 +381,9 @@ const UpdateEvent = () => {
 
               {errorDatos ? (
                 <>
-                  <ParrafoErrores>Faltan datos obligatorios por poner</ParrafoErrores>
+                  <ParrafoErrores>
+                    Faltan datos obligatorios por poner
+                  </ParrafoErrores>
                 </>
               ) : errorFecha ? (
                 <>
@@ -392,6 +411,7 @@ const UpdateEvent = () => {
           <></>
         )}
       </RedBorderMenu>
+      {updateEventDate}
     </>
   );
 };

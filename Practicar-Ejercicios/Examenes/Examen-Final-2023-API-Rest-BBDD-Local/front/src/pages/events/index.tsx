@@ -38,8 +38,9 @@ const Events = () => {
         console.log("Informacion de result", result);
         setErrorBack({ error: undefined });
       } else {
-        console.log("Error", await response.text());
-        setErrorBack({ error: await response.text() });
+        const result = await response.text();
+        console.log("Error", result);
+        setErrorBack({ error: result });
       }
     } catch (error) {
       console.log(error);

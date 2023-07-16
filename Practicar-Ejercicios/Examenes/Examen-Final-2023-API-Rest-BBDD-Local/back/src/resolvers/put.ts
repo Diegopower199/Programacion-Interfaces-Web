@@ -102,7 +102,7 @@ export const updateEvent = async (context: UpdateEventContext) => {
             invitados: value.invitados ? value.invitados : evento.invitados,
         }
 
-        console.log(newEvent);
+        console.log("newEvent: ", newEvent);
 
         await eventosCollection.updateOne({_id: new ObjectId(value.id)}, {$set: newEvent as Eventos});
 

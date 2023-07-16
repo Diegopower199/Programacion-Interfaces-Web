@@ -56,13 +56,12 @@ const AddEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
-        setResponseAddEvent(result)
         console.log(result);
         setErrorBack({ error: undefined });
       } else {
-        const result = await response.json();
-        setErrorBack({ error: result.message }); // Esto es porque esta así en el back, un json con una variable que es message
-        console.log("Error", await response.json());
+        const result = await response.text();
+        setErrorBack({ error: result }); // Esto es porque esta así en el back, un json con una variable que es message
+        console.log("Error", result);
       }
     } catch (error) {
       console.log(error);

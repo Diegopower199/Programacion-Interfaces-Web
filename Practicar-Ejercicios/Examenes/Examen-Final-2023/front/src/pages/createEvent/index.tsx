@@ -1,20 +1,18 @@
 import { gql, useMutation } from "@apollo/client";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 export type AddEventResponse = {
-  addEvent: {
+  createEvent: {
     id: string;
     title: string;
     description: string;
     date: Date;
     startHour: number;
     endHour: number;
-  };
+  }
 };
-
-let ErrorBack: { error?: string } = { error: undefined };
 
 const AddEvent = () => {
   const mutation = gql`
@@ -60,177 +58,246 @@ const AddEvent = () => {
     <>Loading...</>;
   }
 
-  if (addEventMutationAnswer.error) {
-    ErrorBack.error = addEventMutationAnswer.error.message;
-  }
-
   return (
     <>
       <Link href={"/"}>
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
-      <h1>Add Event</h1>
-      <DivFormulario>
-        <DivElementoFormulario>
-          <LabelIdentificar>Titulo: </LabelIdentificar>
-          <InputValores
-            type="text"
-            value={titulo}
-            placeholder="Titulo"
-            onChange={(e) => {
-              setTitulo(e.target.value);
-            }}
-          ></InputValores>
-        </DivElementoFormulario>
-        <DivElementoFormulario>
-          <LabelIdentificar>Descripcion: </LabelIdentificar>
-          <InputValores
-            type="text"
-            value={descripcion}
-            placeholder="Descripcion"
-            onChange={(e) => {
-              setDescripcion(e.target.value);
-            }}
-          ></InputValores>
-        </DivElementoFormulario>
+      <PurpleBorderMenu>
+        <H1Titulo>Add Event</H1Titulo>
+        <DivFormulario>
+          <p>Los campos que tengan * son obligatorios</p>
+          <DivElementoFormulario>
+            <LabelIdentificar>Titulo *: </LabelIdentificar>
+            <InputValores
+              type="text"
+              value={titulo}
+              placeholder="Titulo"
+              onChange={(e) => {
+                setTitulo(e.target.value);
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Descripcion *: </LabelIdentificar>
+            <InputValores
+              type="text"
+              value={descripcion}
+              placeholder="Descripcion"
+              onChange={(e) => {
+                setDescripcion(e.target.value);
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
 
-        <DivElementoFormulario>
-          <LabelIdentificar>Fecha: </LabelIdentificar>
-          <InputValores
-            type="date"
-            value={fecha}
-            placeholder="Date"
-            onChange={(e) => {
-              setFecha(e.target.value);
-            }}
-          ></InputValores>
-        </DivElementoFormulario>
+          <DivElementoFormulario>
+            <LabelIdentificar>Fecha *: </LabelIdentificar>
+            <InputValores
+              type="date"
+              value={fecha}
+              placeholder="Date"
+              onChange={(e) => {
+                setFecha(e.target.value);
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
 
-        {fecha}
-
-        <DivElementoFormulario>
-          <LabelIdentificar>Hora de inicio </LabelIdentificar>
-          <InputValores
-            type="number"
-            value={horaInicio}
-            placeholder="Hora de inicio"
-            onChange={(e) => {
-              console.log(Number(e.target.value));
-              if (e.target.value.includes("-")) {
-                e.target.value = "";
-              } else if (Number(e.target.value) >= 25) {
-                e.target.value = e.target.value.slice(0, 2);
-                if (Number(e.target.value) > 24) {
-                  e.target.value = e.target.value.slice(0, 1);
+          <DivElementoFormulario>
+            <LabelIdentificar>Hora de inicio *: </LabelIdentificar>
+            <InputValores
+              type="number"
+              value={horaInicio}
+              placeholder="Hora de inicio"
+              onChange={(e) => {
+                console.log(Number(e.target.value));
+                if (e.target.value.includes("-")) {
+                  e.target.value = "";
+                } else if (Number(e.target.value) >= 25) {
+                  e.target.value = e.target.value.slice(0, 2);
+                  if (Number(e.target.value) > 24) {
+                    e.target.value = e.target.value.slice(0, 1);
+                  }
+                  console.log("Cambio de valor", e.target.value);
+                } else {
+                  setHoraInicio(e.target.value);
                 }
-                console.log("Cambio de valor", e.target.value);
-              } else {
-                setHoraInicio(e.target.value);
-              }
-            }}
-          ></InputValores>
-        </DivElementoFormulario>
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
 
-        <DivElementoFormulario>
-          <LabelIdentificar>Hora de finalizacion </LabelIdentificar>
-          <InputValores
-            type="number"
-            value={horaFinalizacion}
-            placeholder="Hora de finalizacion"
-            onChange={(e) => {
-              console.log(Number(e.target.value));
-              if (e.target.value.includes("-")) {
-                e.target.value = "";
-              } else if (Number(e.target.value) >= 25) {
-                e.target.value = e.target.value.slice(0, 2);
-                if (Number(e.target.value) > 24) {
-                  e.target.value = e.target.value.slice(0, 1);
+          <DivElementoFormulario>
+            <LabelIdentificar>Hora de finalizacion *:</LabelIdentificar>
+            <InputValores
+              type="number"
+              value={horaFinalizacion}
+              placeholder="Hora de finalizacion"
+              onChange={(e) => {
+                console.log(Number(e.target.value));
+                if (e.target.value.includes("-")) {
+                  e.target.value = "";
+                } else if (Number(e.target.value) >= 25) {
+                  e.target.value = e.target.value.slice(0, 2);
+                  if (Number(e.target.value) > 24) {
+                    e.target.value = e.target.value.slice(0, 1);
+                  }
+                  console.log("Cambio de valor", e.target.value);
+                } else {
+                  setHoraFinalizacion(e.target.value);
                 }
-                console.log("Cambio de valor", e.target.value);
-              } else {
-                setHoraFinalizacion(e.target.value);
-              }
+              }}
+            ></InputValores>
+          </DivElementoFormulario>
+          <InputSubmit
+            type="submit"
+            value={"Añadir evento"}
+            onClick={async () => {
+              try {
+                let yearSeleccionado = fecha.slice(0, 4);
+                if (
+                  titulo === "" ||
+                  descripcion === "" ||
+                  fecha === "" ||
+                  horaInicio === "" ||
+                  horaFinalizacion === ""
+                ) {
+                  console.log("Error de datos");
+                  setErrorDatos(true);
+                  setErrorHoraInicioFinalizacion(false);
+                  setErrorFecha(false);
+                } else if (Number(yearSeleccionado) < 1970) {
+                  setErrorFecha(true);
+                  setErrorDatos(false);
+                  setErrorHoraInicioFinalizacion(false);
+                } else if (Number(horaInicio) >= Number(horaFinalizacion)) {
+                  setErrorHoraInicioFinalizacion(true);
+                  setErrorDatos(false);
+                  setErrorFecha(false);
+                } else {
+                  await addEventMutation({
+                    variables: {
+                      title: titulo,
+                      description: descripcion,
+                      date: new Date(fecha),
+                      startHour: Number(horaInicio),
+                      endHour: Number(horaFinalizacion),
+                    },
+                  });
+                  setErrorDatos(false);
+                  setErrorFecha(false);
+                  setErrorHoraInicioFinalizacion(false);
+
+                  setTitulo("");
+                  setDescripcion("");
+                  setFecha("");
+                  setHoraInicio("");
+                  setHoraFinalizacion("");
+                }
+              } catch {}
             }}
-          ></InputValores>
-        </DivElementoFormulario>
-        <InputSubmit
-          type="submit"
-          value={"Añadir evento"}
-          onClick={async () => {
-            try {
-              let yearSeleccionado = fecha.slice(0, 4);
-              if (
-                titulo === "" ||
-                descripcion === "" ||
-                fecha === "" ||
-                horaInicio === "" ||
-                horaFinalizacion === ""
-              ) {
-                console.log("Error de datos");
-                setErrorDatos(true);
-                setErrorHoraInicioFinalizacion(false);
-                setErrorFecha(false);
-              } else if (Number(yearSeleccionado) < 1970) {
-                setErrorFecha(true);
-                setErrorDatos(false);
-                setErrorHoraInicioFinalizacion(false);
-              } else if (Number(horaInicio) >= Number(horaFinalizacion)) {
-                setErrorHoraInicioFinalizacion(true);
-                setErrorDatos(false);
-                setErrorFecha(false);
-              } else {
-                await addEventMutation({
-                  variables: {
-                    title: titulo,
-                    description: descripcion,
-                    date: new Date(fecha),
-                    startHour: Number(horaInicio),
-                    endHour: Number(horaFinalizacion),
-                  },
-                });
-                setErrorDatos(false);
-                setErrorFecha(false);
-                setErrorHoraInicioFinalizacion(false);
+          ></InputSubmit>
 
-                setTitulo("");
-                setDescripcion("");
-                setFecha("");
-                setHoraInicio("");
-                setHoraFinalizacion("");
-              }
-            } catch {}
-          }}
-        ></InputSubmit>
+          {errorDatos ? (
+            <>
+              <ParrafoErrores>
+                Faltan datos obligatorios por poner
+              </ParrafoErrores>
+            </>
+          ) : errorFecha ? (
+            <>
+              <ParrafoErrores>
+                El año tiene que ser igua o superior a 1970
+              </ParrafoErrores>
+            </>
+          ) : errorHoraInicioFinalizacion ? (
+            <>
+              <ParrafoErrores>
+                La hora de inicio es mayor o igual que la hora de finalizacion
+              </ParrafoErrores>
+            </>
+          ) : addEventMutationAnswer.error ? (
+            <>
+              <ParrafoErrores>{addEventMutationAnswer.error.message}</ParrafoErrores>
+            </>
+          ) : (
+            <></>
+          )}
+        </DivFormulario>
+      </PurpleBorderMenu>
 
-        {errorDatos ? (
-          <>
-            <ParrafoErrores>Hay un error de datos</ParrafoErrores>
-          </>
-        ) : errorFecha ? (
-          <>
-            <ParrafoErrores>
-              El año tiene que ser igua o superior a 1970
-            </ParrafoErrores>
-          </>
-        ) : errorHoraInicioFinalizacion ? (
-          <>
-            <ParrafoErrores>
-              La hora de inicio es mayor o igual que la hora de finalizacion
-            </ParrafoErrores>
-          </>
-        ) : addEventMutationAnswer.error ? (
-          <>
-            <ParrafoErrores>{ErrorBack.error}</ParrafoErrores>
-          </>
-        ) : (
-          <></>
-        )}
-      </DivFormulario>
+      {addEventMutationAnswer.data === null || addEventMutationAnswer.data === undefined ? (
+        <></>
+      ) : (
+        <>
+          <h2>Informacion añadida</h2>
+          <DivElementosSlot>
+            <DivElemento>
+              <ParrafoTitulo>Titulo</ParrafoTitulo>
+              <ParrafoValores>
+                {addEventMutationAnswer.data.createEvent.title}
+              </ParrafoValores>
+            </DivElemento>
+
+            <DivElemento>
+              <ParrafoTitulo>Descripcion</ParrafoTitulo>
+              <ParrafoValores>
+                {addEventMutationAnswer.data.createEvent.description}
+              </ParrafoValores>
+            </DivElemento>
+
+            <DivElemento>
+              <ParrafoTitulo>Fecha</ParrafoTitulo>
+              <ParrafoValores>
+                {addEventMutationAnswer.data.createEvent.date.toString().substring(0, 10)}
+              </ParrafoValores>
+            </DivElemento>
+
+            <DivElemento>
+              <ParrafoTitulo>Inicio</ParrafoTitulo>
+              <ParrafoValores>
+                {addEventMutationAnswer.data.createEvent.startHour}
+              </ParrafoValores>
+            </DivElemento>
+
+            <DivElemento>
+              <ParrafoTitulo>Fin</ParrafoTitulo>
+              <ParrafoValores>
+                {addEventMutationAnswer.data.createEvent.endHour}
+              </ParrafoValores>
+            </DivElemento>
+          </DivElementosSlot>
+        </>
+      )}
     </>
   );
 };
 
 export default AddEvent;
+
+const PurpleBorderMenu = styled.div`
+  font-weight: 600;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 7px solid #733bf6;
+  border-radius: 15px;
+  margin: 10px;
+`;
+
+const H1Titulo = styled.h1`
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const DivFormulario = styled.div`
   display: flex;
@@ -308,4 +375,47 @@ const BotonMenuPrincipal = styled.div`
   :hover {
     cursor: pointer;
   }
+`;
+
+const DivElementosSlot = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  background-color: #424632;
+  margin: 5px;
+`;
+
+const DivElemento = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: aqua;
+
+  border: black 5px solid;
+  height: 81px;
+  width: 96px;
+`;
+
+const ParrafoTitulo = styled.p`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: black 5px solid;
+  width: 91px;
+  height: 70px;
+  margin: 0px;
+  background-color: blueviolet;
+`;
+
+const ParrafoValores = styled.p`
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  color: #333;
+  line-height: 1.6em;
+  text-align: justify;
+  color: #2f2f2f;
+  border-radius: 5px;
 `;
