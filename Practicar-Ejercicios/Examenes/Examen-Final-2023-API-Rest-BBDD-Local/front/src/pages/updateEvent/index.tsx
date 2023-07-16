@@ -20,7 +20,6 @@ const UpdateEvent = () => {
   }>({
     error: undefined,
   });
-  
 
   const [errorFecha, setErrorFecha] = useState<boolean>(false);
   const [errorHoraInicioFinalizacion, setErrorHoraInicioFinalizacion] =
@@ -64,22 +63,43 @@ const UpdateEvent = () => {
         year = partesFecha[2];
 
         console.log("Día:", day, "Mes:", month, "Año:", year);
-        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
-        console.log("Fecha correcta: ", fechaCorrecta)
-        
+        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day
+          .toString()
+          .padStart(2, "0")}`;
+        console.log("Fecha correcta: ", fechaCorrecta);
       } else if (updateEventDate.includes("-")) {
         year = partesFecha[0];
         month = partesFecha[1];
         day = partesFecha[2];
+        // Convertir los valores a números
+        let numericDay = parseInt(day, 10);
+        let numericMonth = parseInt(month, 10);
+        let numericYear = parseInt(year, 10);
+
+        // Agregar un día a la fecha
+        numericDay = numericDay + 1;
+
+        // Verificar si es necesario actualizar el mes y el año
+        if (numericDay > 31) {
+          numericDay = 1;
+          numericMonth = numericMonth + 1;
+          if (numericMonth > 12) {
+            numericMonth = 1;
+            numericYear = numericYear + 1;
+          }
+        }
 
         console.log("Día:", day, "Mes:", month, "Año:", year);
 
-        fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
-        console.log("Fecha correcta: ", fechaCorrecta)
+        fechaCorrecta = `${numericYear}/${numericMonth.toString().padStart(2, "0")}/${numericDay.toString().padStart(2, "0")}`;
 
+
+        //fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
+        console.log("Fecha correcta: ", fechaCorrecta);
       }
 
       const objetoFecha = new Date(fechaCorrecta);
+
       console.log("Objeto fecha: ", objetoFecha);
       const requestOptions = {
         method: "PUT",
@@ -93,7 +113,7 @@ const UpdateEvent = () => {
           invitados: updateEventInvitados,
         }),
       };
-      
+
       console.log("requestOptions: ", requestOptions);
 
       const response = await fetch(
@@ -104,11 +124,11 @@ const UpdateEvent = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Resultado: ", result);
-        errorBackUpdate = ({ error: undefined });
+        errorBackUpdate = { error: undefined };
       } else {
-        const result = await response.text()
+        const result = await response.text();
         console.log("Error", result);
-        errorBackUpdate = ({ error: result });
+        errorBackUpdate = { error: result };
       }
     } catch (error) {
       console.log(error);
@@ -152,7 +172,6 @@ const UpdateEvent = () => {
       </Link>
       <RedBorderMenu>
         <H1Titulo>Update Event</H1Titulo>
-
         {errorBackGet.error ? (
           <ErrorMessage>{errorBackGet.error}</ErrorMessage>
         ) : (
@@ -206,8 +225,18 @@ const UpdateEvent = () => {
                           onClick={() => {
                             setEditIdSelected(event._id);
                             //setAuxDate(new Date(event.fecha));
-                            setAuxDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()))
-                            setUpdateEventDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
+                            setAuxDate(
+                              new Date(
+                                date.getFullYear(),
+                                date.getMonth(),
+                                date.getDate()
+                              )
+                            );
+                            setUpdateEventDate(
+                              `${date.getDate()}/${
+                                date.getMonth() + 1
+                              }/${date.getFullYear()}`
+                            );
                             setUpdateEventTitle(event.titulo);
                             setUpdateEventDesc(event.descripcion);
                             setUpdateEventStart(`${event.inicio}`);
@@ -228,10 +257,8 @@ const UpdateEvent = () => {
             )}
           </>
         )}
-
-        {auxDate.getFullYear()} {auxDate.getMonth()} {auxDate.getDate()} <br/>
+        {auxDate.getFullYear()} {auxDate.getMonth()} {auxDate.getDate()} <br />
         {updateEventDate}
-
         {editIdSelected ? (
           <>
             <DivFormulario>
