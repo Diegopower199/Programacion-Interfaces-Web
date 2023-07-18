@@ -5,5 +5,5 @@ Rest
   - https://swapi.dev/api/
 
 Graphql
-  - https:https://rickandmortyapi.com/documentation/#graphql
+  - https://rickandmortyapi.com/documentation/#graphql
   - https://wayfair.github.io/dociql/

@@ -143,8 +143,6 @@ const RemoveEvent = () => {
     try {
       console.log("Update Event Date: ", updateEventDate);
 
-      // AQUI TENEMOS QUE HACER QUE EL DIA SE ACTUALICE BIEN
-
       let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
       let day = "";
       let month = "";
@@ -186,13 +184,18 @@ const RemoveEvent = () => {
 
         console.log("Día:", day, "Mes:", month, "Año:", year);
 
-        fechaCorrecta = `${numericYear}/${numericMonth.toString().padStart(2, "0")}/${numericDay.toString().padStart(2, "0")}`;
+        fechaCorrecta = `${numericYear}/${numericMonth
+          .toString()
+          .padStart(2, "0")}/${numericDay.toString().padStart(2, "0")}`;
+
+        //fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
         console.log("Fecha correcta: ", fechaCorrecta);
       }
 
       const objetoFecha = new Date(fechaCorrecta);
+
       console.log("Objeto fecha: ", objetoFecha);
-      
+
       const requestOptions = {
         method: "PUT",
         body: JSON.stringify({
@@ -270,7 +273,7 @@ const RemoveEvent = () => {
           </>
         ) : (
           <>
-            { (!data || data.length === 0) ? (
+            {!data || data.length === 0 ? (
               <>
                 <p>No hay ningun evento a partir de la fecha actual</p>
               </>
@@ -316,7 +319,7 @@ const RemoveEvent = () => {
                         </DivElemento>
 
                         <BotonBorrar
-                          onClick={ async () => {
+                          onClick={async () => {
                             setIdRemove(event._id);
                             console.log("Id remove", idRemove);
                             await removeEvent(event._id);
@@ -508,7 +511,9 @@ const RemoveEvent = () => {
 
               {errorDatosUpdateEvent ? (
                 <>
-                  <ParrafoErrores>Faltan datos obligatorios por poner</ParrafoErrores>
+                  <ParrafoErrores>
+                    Faltan datos obligatorios por poner
+                  </ParrafoErrores>
                 </>
               ) : errorFechaUpdateEvent ? (
                 <>
@@ -672,6 +677,7 @@ const RemoveEvent = () => {
                   setHoraInicio("");
                   setHoraFinalizacion("");
                   setInvitados([""]);
+                  await allEvents();
                 }
               } catch {}
             }}
@@ -679,7 +685,7 @@ const RemoveEvent = () => {
           {errorDatosCreateEvent ? (
             <>
               <ParrafoErrores>
-              Faltan datos obligatorios por poner
+                Faltan datos obligatorios por poner
               </ParrafoErrores>
             </>
           ) : errorFechaCreateEvent ? (

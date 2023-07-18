@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-export type UpdateEventResponse = {
+type UpdateEventResponse = {
   updateEvent: {
     id: string;
     title: string;
@@ -14,7 +14,7 @@ export type UpdateEventResponse = {
   };
 };
 
-export type QueryResponse = {
+type QueryResponse = {
   events: {
     id: string;
     title: string;
@@ -147,7 +147,13 @@ const UpdateEvent = () => {
                           onClick={() => {
                             const date = new Date(event.date);
                             setEditSelected(event.id);
-                            setAuxDate(new Date(event.date));
+                            setAuxDate(
+                              new Date(
+                                date.getFullYear(),
+                                date.getMonth(),
+                                date.getDate()
+                              )
+                            );
                             setUpdateEventDate(
                               `${date.getDate()}/${
                                 date.getMonth() + 1
@@ -287,29 +293,58 @@ const UpdateEvent = () => {
                       setErrorFecha(false);
                     } else {
                       let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
+                      let day = "";
+                      let month = "";
+                      let year = "";
 
-                      let day = partesFecha[0];
-                      let month = partesFecha[1];
-                      let year = partesFecha[2];
+                      let fechaCorrecta = "";
 
-                      console.log("Día:", day);
-                      console.log("Mes:", month);
-                      console.log("Año:", year);
+                      if (updateEventDate.includes("/")) {
+                        day = partesFecha[0];
+                        month = partesFecha[1];
+                        year = partesFecha[2];
 
-                      console.log(
-                        new Date(
-                          parseInt(year),
-                          parseInt(month) - 1,
-                          parseInt(day)
-                        )
-                      );
+                        console.log("Día:", day, "Mes:", month, "Año:", year);
+                        fechaCorrecta = `${year}/${month
+                          .toString()
+                          .padStart(2, "0")}/${day
+                          .toString()
+                          .padStart(2, "0")}`;
+                        console.log("Fecha correcta: ", fechaCorrecta);
+                      } else if (updateEventDate.includes("-")) {
+                        year = partesFecha[0];
+                        month = partesFecha[1];
+                        day = partesFecha[2];
+                        // Convertir los valores a números
+                        let numericDay = parseInt(day, 10);
+                        let numericMonth = parseInt(month, 10);
+                        let numericYear = parseInt(year, 10);
 
-                      const objetoFecha = new Date(
-                        parseInt(year),
-                        parseInt(month) - 1,
-                        parseInt(day)
-                      );
-                      console.log(objetoFecha);
+                        // Agregar un día a la fecha
+                        numericDay = numericDay + 1;
+
+                        // Verificar si es necesario actualizar el mes y el año
+                        if (numericDay > 31) {
+                          numericDay = 1;
+                          numericMonth = numericMonth + 1;
+                          if (numericMonth > 12) {
+                            numericMonth = 1;
+                            numericYear = numericYear + 1;
+                          }
+                        }
+
+                        console.log("Día:", day, "Mes:", month, "Año:", year);
+
+                        fechaCorrecta = `${numericYear}/${numericMonth
+                          .toString()
+                          .padStart(2, "0")}/${numericDay
+                          .toString()
+                          .padStart(2, "0")}`;
+                        console.log("Fecha correcta: ", fechaCorrecta);
+                      }
+
+                      const objetoFecha = new Date(fechaCorrecta);
+                      console.log("Objeto fecha: ", objetoFecha);
 
                       await updateEventMutation({
                         variables: {

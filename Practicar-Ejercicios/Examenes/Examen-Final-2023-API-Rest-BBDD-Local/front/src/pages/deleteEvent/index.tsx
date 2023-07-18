@@ -132,7 +132,7 @@ const RemoveEvent = () => {
                       </DivElemento>
 
                       <BotonBorrar
-                        onClick={ async (e) => {
+                        onClick={ async () => {
                             setIdRemove(event._id)
                             console.log("Id remove", idRemove)
                             await removeEvent(event._id);

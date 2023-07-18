@@ -48,8 +48,6 @@ const UpdateEvent = () => {
     try {
       console.log("Update Event Date: ", updateEventDate);
 
-      // AQUI TENEMOS QUE HACER QUE EL DIA SE ACTUALICE BIEN
-
       let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
       let day = "";
       let month = "";
@@ -224,7 +222,7 @@ const UpdateEvent = () => {
                         <BotonActualizar
                           onClick={() => {
                             setEditIdSelected(event._id);
-                            //setAuxDate(new Date(event.fecha));
+                            
                             setAuxDate(
                               new Date(
                                 date.getFullYear(),
@@ -547,12 +545,12 @@ const BotonMenuPrincipal = styled.div`
   }
 `;
 
-export const ErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   color: red;
   font-weight: 600;
 `;
 
-export const ItemsList = styled.div`
+const ItemsList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -560,7 +558,7 @@ export const ItemsList = styled.div`
   width: 600px;
 `;
 
-export const BotonActualizar = styled.button`
+const BotonActualizar = styled.button`
   font-weight: 600;
   border-radius: 5px;
   color: white;

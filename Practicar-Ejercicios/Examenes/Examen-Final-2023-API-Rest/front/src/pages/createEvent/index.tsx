@@ -195,7 +195,7 @@ const AddEvent = () => {
                   setErrorFecha(false);
                 } else {
                   await createEvent();
-                  
+
                   setErrorDatos(false);
                   setErrorFecha(false);
                   setErrorHoraInicioFinalizacion(false);
@@ -212,7 +212,9 @@ const AddEvent = () => {
           ></InputSubmit>
           {errorDatos ? (
             <>
-              <ParrafoErrores>Faltan datos obligatorios por poner</ParrafoErrores>
+              <ParrafoErrores>
+                Faltan datos obligatorios por poner
+              </ParrafoErrores>
             </>
           ) : errorFecha ? (
             <>
@@ -230,59 +232,54 @@ const AddEvent = () => {
             <>
               <ParrafoErrores>{errorBack.error}</ParrafoErrores>
             </>
-          )  : (
-            <>
-            
-            </>
+          ) : (
+            <></>
           )}
         </DivFormulario>
       </PurpleBorderMenu>
 
       {responseAddEvent !== undefined ? (
-            <>
-              <h2>Informacion añadida</h2>
-              <DivElementosSlot>
-                <DivElemento>
-                  <ParrafoTitulo>Titulo</ParrafoTitulo>
-                  <ParrafoValores>{responseAddEvent?.titulo}</ParrafoValores>
-                </DivElemento>
+        <>
+          <h2>Informacion añadida</h2>
+          <DivElementosSlot>
+            <DivElemento>
+              <ParrafoTitulo>Titulo</ParrafoTitulo>
+              <ParrafoValores>{responseAddEvent?.titulo}</ParrafoValores>
+            </DivElemento>
 
-                <DivElemento>
-                  <ParrafoTitulo>Descripcion</ParrafoTitulo>
-                  <ParrafoValores>
-                    {responseAddEvent?.descripcion}
-                  </ParrafoValores>
-                </DivElemento>
+            <DivElemento>
+              <ParrafoTitulo>Descripcion</ParrafoTitulo>
+              <ParrafoValores>{responseAddEvent?.descripcion}</ParrafoValores>
+            </DivElemento>
 
-                <DivElemento>
-                  <ParrafoTitulo>Fecha</ParrafoTitulo>
-                  <ParrafoValores>
-                    {responseAddEvent?.fecha.toString().substring(0, 10)}
-                  </ParrafoValores>
-                </DivElemento>
+            <DivElemento>
+              <ParrafoTitulo>Fecha</ParrafoTitulo>
+              <ParrafoValores>
+                {responseAddEvent?.fecha.toString().substring(0, 10)}
+              </ParrafoValores>
+            </DivElemento>
 
-                <DivElemento>
-                  <ParrafoTitulo>Inicio</ParrafoTitulo>
-                  <ParrafoValores>{responseAddEvent?.inicio}</ParrafoValores>
-                </DivElemento>
+            <DivElemento>
+              <ParrafoTitulo>Inicio</ParrafoTitulo>
+              <ParrafoValores>{responseAddEvent?.inicio}</ParrafoValores>
+            </DivElemento>
 
-                <DivElemento>
-                  <ParrafoTitulo>Fin</ParrafoTitulo>
-                  <ParrafoValores>{responseAddEvent?.fin}</ParrafoValores>
-                </DivElemento>
+            <DivElemento>
+              <ParrafoTitulo>Fin</ParrafoTitulo>
+              <ParrafoValores>{responseAddEvent?.fin}</ParrafoValores>
+            </DivElemento>
 
-                <DivElemento>
-                  <ParrafoTitulo>Invitados</ParrafoTitulo>
-                  <ParrafoValores>
-                    {responseAddEvent?.invitados.toString()}
-                  </ParrafoValores>
-                </DivElemento>
-              </DivElementosSlot>
-            </>
-          ) : (
-            <>
-            </>
-          )}
+            <DivElemento>
+              <ParrafoTitulo>Invitados</ParrafoTitulo>
+              <ParrafoValores>
+                {responseAddEvent?.invitados.toString()}
+              </ParrafoValores>
+            </DivElemento>
+          </DivElementosSlot>
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

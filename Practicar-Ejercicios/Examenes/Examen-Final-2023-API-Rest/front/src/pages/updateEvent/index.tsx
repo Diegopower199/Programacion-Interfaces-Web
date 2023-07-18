@@ -53,8 +53,6 @@ const UpdateEvent = () => {
     try {
       console.log("Update Event Date: ", updateEventDate);
 
-      // AQUI TENEMOS QUE HACER QUE EL DIA SE ACTUALICE BIEN
-
       let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
       let day = "";
       let month = "";
@@ -96,11 +94,16 @@ const UpdateEvent = () => {
 
         console.log("Día:", day, "Mes:", month, "Año:", year);
 
-        fechaCorrecta = `${numericYear}/${numericMonth.toString().padStart(2, "0")}/${numericDay.toString().padStart(2, "0")}`;
+        fechaCorrecta = `${numericYear}/${numericMonth
+          .toString()
+          .padStart(2, "0")}/${numericDay.toString().padStart(2, "0")}`;
+
+        //fechaCorrecta = `${year}/${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}`;
         console.log("Fecha correcta: ", fechaCorrecta);
       }
 
       const objetoFecha = new Date(fechaCorrecta);
+
       console.log("Objeto fecha: ", objetoFecha);
 
       const requestOptions = {
@@ -174,7 +177,6 @@ const UpdateEvent = () => {
       </Link>
       <RedBorderMenu>
         <H1Titulo>Update Event</H1Titulo>
-
         {errorBackGet.error ? (
           <ErrorMessage>{errorBackGet.error}</ErrorMessage>
         ) : (
@@ -227,6 +229,7 @@ const UpdateEvent = () => {
                         <BotonActualizar
                           onClick={() => {
                             setEditIdSelected(event._id);
+
                             setAuxDate(
                               new Date(
                                 date.getFullYear(),
@@ -390,15 +393,18 @@ const UpdateEvent = () => {
                       setErrorFecha(false);
                     } else {
                       await updateEvent();
-                      console.log(errorBackUpdate.error)
+                      console.log(errorBackUpdate);
                       if (errorBackUpdate.error === undefined) {
                         setEditIdSelected("");
                       }
+
+                      console.log(errorBackUpdate);
                       setErrorHoraInicioFinalizacion(false);
                       setErrorDatos(false);
                       setErrorFecha(false);
 
                       await allEvents();
+                      console.log(errorBackUpdate);
                     }
                   } catch {}
                 }}
@@ -406,7 +412,9 @@ const UpdateEvent = () => {
 
               {errorDatos ? (
                 <>
-                  <ParrafoErrores>Faltan datos obligatorios por poner</ParrafoErrores>
+                  <ParrafoErrores>
+                    Faltan datos obligatorios por poner
+                  </ParrafoErrores>
                 </>
               ) : errorFecha ? (
                 <>

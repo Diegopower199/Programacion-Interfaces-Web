@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import React from "react";
 
-
 type GetEvento = {
   _id: string;
   titulo: string;
@@ -41,7 +40,7 @@ const Events = () => {
         setErrorBack({ error: undefined });
       } else {
         const result = await response.json();
-        console.log("Error", result.message );
+        console.log("Error", result.message);
         setErrorBack({ error: result.message });
       }
     } catch (error) {
@@ -50,17 +49,19 @@ const Events = () => {
   };
 
   useEffect(() => {
-    console.log("Solo estamos la primera vez, despues cada 5 segundos se carga la informacion")
+    console.log(
+      "Solo estamos la primera vez, despues cada 5 segundos se carga la informacion"
+    );
     allEvents();
     const intervalId = setInterval(() => {
       console.log("Initialized true");
       allEvents();
-      console.log("HOLA: ", errorBack.error)
+      console.log("HOLA: ", errorBack.error);
     }, 5000);
 
     return () => {
       clearInterval(intervalId);
-    }
+    };
   }, []);
 
   return (
@@ -69,74 +70,77 @@ const Events = () => {
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
       <GreenBorderMenu>
-      <H1Titulo>Events</H1Titulo>
+        <H1Titulo>Events</H1Titulo>
 
-      
-
-      { (errorBack.error !== undefined) ? (
-        <>
+        {errorBack.error !== undefined ? (
+          <>
             <ErrorMessage>{errorBack.error}</ErrorMessage>
-        </>
-      ) : (
-        <>
-          { (!data || data.length === 0) ? (
-            <>
-                <h1>No hay eventos con la fecha superior o igual a la fecha de hoy</h1>
-            </>
-          ) : (
-            <>
-              {data.map((event) => {
-                return (
-                  <>
-                    <DivElementosSlot>
-                      <DivElemento>
-                        <ParrafoTitulo>Title</ParrafoTitulo>
-                        <ParrafoValores>{event.titulo}</ParrafoValores>
-                      </DivElemento>
+          </>
+        ) : (
+          <>
+            {!data || data.length === 0 ? (
+              <>
+                <h1>
+                  No hay eventos con la fecha superior o igual a la fecha de hoy
+                </h1>
+              </>
+            ) : (
+              <>
+                {data.map((event) => {
+                  return (
+                    <>
+                      <DivElementosSlot>
+                        <DivElemento>
+                          <ParrafoTitulo>Title</ParrafoTitulo>
+                          <ParrafoValores>{event.titulo}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Description</ParrafoTitulo>
-                        <ParrafoValores>{event.descripcion}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Description</ParrafoTitulo>
+                          <ParrafoValores>{event.descripcion}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Date</ParrafoTitulo>
-                        <ParrafoValores>
-                          {event.fecha.toString().substring(0, 10)}
-                        </ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Date</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.fecha.toString().substring(0, 10)}
+                          </ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Start hour</ParrafoTitulo>
-                        <ParrafoValores>{event.inicio}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Start hour</ParrafoTitulo>
+                          <ParrafoValores>{event.inicio}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>End hour</ParrafoTitulo>
-                        <ParrafoValores>{event.fin}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>End hour</ParrafoTitulo>
+                          <ParrafoValores>{event.fin}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Invitados</ParrafoTitulo>
-                        <ParrafoValores>{event.invitados.toString()}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Invitados</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.invitados.toString()}
+                          </ParrafoValores>
+                        </DivElemento>
 
-                      <BotonBorrar
-                        onClick={ async () => {
-                            router.push(`/event/${event._id}`)
-                        }}
-                      >
-                        <ParrafoValores>IR A LA PAGINA CON EL ID</ParrafoValores>
-                        
-                      </BotonBorrar>
-                    </DivElementosSlot>
-                  </>
-                );
-              })}
-            </>
-          )}
-        </>
-      )}
+                        <BotonBorrar
+                          onClick={async () => {
+                            router.push(`/event/${event._id}`);
+                          }}
+                        >
+                          <ParrafoValores>
+                            IR A LA PAGINA CON EL ID
+                          </ParrafoValores>
+                        </BotonBorrar>
+                      </DivElementosSlot>
+                    </>
+                  );
+                })}
+              </>
+            )}
+          </>
+        )}
       </GreenBorderMenu>
     </>
   );

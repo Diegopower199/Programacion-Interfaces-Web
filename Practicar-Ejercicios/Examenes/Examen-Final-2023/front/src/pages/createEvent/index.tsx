@@ -39,6 +39,7 @@ const AddEvent = () => {
       }
     }
   `;
+
   const [titulo, setTitulo] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
   const [fecha, setFecha] = useState<string>("");
@@ -46,11 +47,10 @@ const AddEvent = () => {
   const [horaFinalizacion, setHoraFinalizacion] = useState<string>("");
 
   const [errorFecha, setErrorFecha] = useState<boolean>(false);
-  const [errorHoraInicioFinalizacion, setErrorHoraInicioFinalizacion] =
-    useState<boolean>(false);
+  const [errorHoraInicioFinalizacion, setErrorHoraInicioFinalizacion] = useState<boolean>(false);
   const [errorDatos, setErrorDatos] = useState<boolean>(false);
-  const [addEventMutation, addEventMutationAnswer] =
-    useMutation<AddEventResponse>(mutation, {
+
+  const [addEventMutation, addEventMutationAnswer] = useMutation<AddEventResponse>(mutation, {
       errorPolicy: "all",
     });
 
@@ -160,7 +160,6 @@ const AddEvent = () => {
                   horaInicio === "" ||
                   horaFinalizacion === ""
                 ) {
-                  console.log("Error de datos");
                   setErrorDatos(true);
                   setErrorHoraInicioFinalizacion(false);
                   setErrorFecha(false);

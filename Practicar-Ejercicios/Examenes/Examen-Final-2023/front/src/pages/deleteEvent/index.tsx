@@ -3,8 +3,8 @@ import Link from "next/link";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-export type RemoveEventResponse = {
-  removeEvent: {
+type RemoveEventResponse = {
+  deleteEvent: {
     id: string;
     title: string;
     description: string;
@@ -14,7 +14,7 @@ export type RemoveEventResponse = {
   };
 };
 
-export type QueryResponse = {
+type QueryResponse = {
   events: {
     id: string;
     title: string;
@@ -73,7 +73,7 @@ const RemoveEvent = () => {
         <ErrorMessage>{queryAnswer.error.message}</ErrorMessage>
       ) : (
         <>
-          { queryAnswer.data?.events.length === 0 ? (
+          { (!queryAnswer || queryAnswer.data?.events.length === 0) ? (
             <>
               <p>No hay ningun evento a partir de la fecha actual</p>
             </>
@@ -111,12 +111,14 @@ const RemoveEvent = () => {
                       </DivElemento>
 
                       <BotonBorrar
-                        onClick={async () => {
+                        onClick={ async () => {
+                          
                           await removeEventMutation({
                             variables: {
                               deleteEventId: event.id,
                             },
                           });
+                          
                           await queryAnswer.refetch();
                         }}
                       >

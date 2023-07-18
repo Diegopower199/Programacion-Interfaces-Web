@@ -132,47 +132,55 @@ const TablaInformacionUsuario = () => {
 
       <Menu>
         <Wrapper columns={columns.length}>
-          {columns.map((column, index) => (
-            <>
-              <ColumnDiv>
-                <ColumnName // ESTO ES PARA CAMBIAR LOS VALORES A LAS COLUMNAS
-                  value={column.name}
-                  onChange={(
-                    e // CREO QUE ESTO ES ASI, NO ESTOY SEGURO
-                  ) =>
-                    setColumns(
-                      columns.map((column, i) => {
-                        if (i === index) {
-                          return { name: e.target.value, type: column.type };
-                        } else {
-                          return column;
-                        }
-                      })
-                    )
-                  }
-                ></ColumnName>
-              </ColumnDiv>
-            </>
-          ))}
-          <br />
+          {columns.map(
+            (
+              column,
+              index // Esto es para poner los valores de las columnas
+            ) => (
+              <>
+                <ColumnDiv>
+                  <ColumnName // ESTO ES PARA CAMBIAR LOS VALORES A LAS COLUMNAS
+                    value={column.name}
+                    onChange={(e) =>
+                      setColumns(
+                        columns.map((column, i) => {
+                          if (i === index) {
+                            return { name: e.target.value, type: column.type };
+                          } else {
+                            return column;
+                          }
+                        })
+                      )
+                    }
+                  ></ColumnName>
+                </ColumnDiv>
+              </>
+            )
+          )}
 
           {rows.map((row, index) => (
             <>
-              {row.map((item) => (
-                <>
-                  <GridItem row={index + 2}>{item}</GridItem>
-                </>
-              ))}
+              {row.map(
+                (
+                  item // Informacion de las columnas que se reparten por filas, y el row={index + 2} es para que su valor sea la primera columna y este en la posicion 2 porque la posicion 1 es el nombre de las columnas
+                ) => (
+                  <>
+                    <GridItem row={index + 2}>{item}</GridItem>
+                  </>
+                )
+              )}
 
               <RemoveRowButton
                 row={index + 2} // Esto es +2 porque si no la primera papelera esta en la fila de las columnas
                 column={columns.length + 1} // Donde se ubica la papelera
                 onClick={async () => {
-                  const borrarFilaElegidaEliminada = rows.filter(
-                    (row, i) => i != index
-                  );
+                  const borrarFilaElegidaEliminada = rows.filter((row, i) => {
+                    i != index;
+                  });
                   const identificarFilaElegidaEliminada = rows.filter(
-                    (row, i) => i === index
+                    (row, i) => {
+                      i === index;
+                    }
                   );
 
                   identificarFilaElegidaEliminada.forEach((valores) => {

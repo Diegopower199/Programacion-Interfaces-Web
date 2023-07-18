@@ -14,7 +14,6 @@ type GetEvento = {
 };
 
 let errorBackUpdateEvent: { error: string | undefined } = { error: undefined };
-//let errorBackCreateEvent: { error: string | undefined } = { error: undefined };
 
 const allFunctionsEvent = () => {
   const [data, setData] = useState<GetEvento[]>([]);
@@ -49,7 +48,7 @@ const allFunctionsEvent = () => {
   const [errorDatosCreateEvent, setErrorDatosCreateEvent] =
     useState<boolean>(false);
 
-  // Esrados para remove event
+  // Estados para remove event
   const [idRemove, setIdRemove] = useState<string>("");
   const [responseRemoveFetch, setResponseRemoveFetch] = useState<string>("");
 
@@ -100,7 +99,7 @@ const allFunctionsEvent = () => {
         setErrorBackCreateEvent({ error: undefined });
       } else {
         const result = await response.text();
-        setErrorBackCreateEvent({ error: result }); // Esto es porque esta así en el back, un json con una variable que es message
+        setErrorBackCreateEvent({ error: result });
         console.log("Error", result);
       }
     } catch (error) {
@@ -144,9 +143,7 @@ const allFunctionsEvent = () => {
     try {
       console.log("Update Event Date: ", updateEventDate);
 
-      
-
-      let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para eliminar cuando hay '/' o '-'
+      let partesFecha = updateEventDate.split(/[\/-]/); // Expresion regular para separar cuando hay '/' o '-'
       let day = "";
       let month = "";
       let year = "";
@@ -320,11 +317,16 @@ const allFunctionsEvent = () => {
                         </DivElemento>
 
                         <BotonBorrar
-                          onClick={async (e) => {
+                          onClick={async () => {
                             setIdRemove(event._id);
                             console.log("Id remove", idRemove);
                             await removeEvent(event._id);
-                            console.log("todo bien");
+                            
+                            if (event._id === editIdSelected) {
+                              // Para eliminar si estamos modificando ese dato y lo hemos eliminado
+                              setEditIdSelected("");
+                            }
+
                             await allEvents();
                           }}
                         >
@@ -342,9 +344,10 @@ const allFunctionsEvent = () => {
                               new Date(
                                 date.getFullYear(),
                                 date.getMonth(),
-                                date.getDate()
+                                date.getDate(),
                               )
                             );
+                            
                             setUpdateEventDate(
                               `${date.getDate()}/${
                                 date.getMonth() + 1
@@ -371,6 +374,9 @@ const allFunctionsEvent = () => {
           </>
         )}
       </GreenBorderMenu>
+
+      {auxDate.getDate()}
+
 
       {editIdSelected ? (
         <>

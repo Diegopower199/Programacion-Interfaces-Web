@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import React from "react";
 
-
 type GetEvento = {
   _id: string;
   titulo: string;
@@ -16,16 +15,23 @@ type GetEvento = {
 
 const RemoveEvent = () => {
   const [data, setData] = useState<GetEvento[]>([]);
-  const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({ error: undefined, });
+  const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({
+    error: undefined,
+  });
   const [idRemove, setIdRemove] = useState<string>("");
-  const [responseRemoveFetch, setResponseRemoveFetch ] = useState<string>("");
+  const [responseRemoveFetch, setResponseRemoveFetch] = useState<string>("");
 
   const removeEvent = async (idRemove: string) => {
     try {
       const requestOptions = {
         method: "DELETE",
       };
-      console.log("requestOptions: ", requestOptions, "\nId remove: ", idRemove);
+      console.log(
+        "requestOptions: ",
+        requestOptions,
+        "\nId remove: ",
+        idRemove
+      );
 
       const response = await fetch(
         `http://localhost:8080/deleteEvent/${idRemove}`,
@@ -46,7 +52,7 @@ const RemoveEvent = () => {
       console.log(error);
     }
   };
-  
+
   const allEvents = async () => {
     try {
       const requestOptions = {
@@ -65,7 +71,7 @@ const RemoveEvent = () => {
         console.log("Informacion de result", result);
       } else {
         const result = await response.json();
-        console.log("Error", result.message );
+        console.log("Error", result.message);
         setErrorBack({ error: result.message });
       }
     } catch (error) {
@@ -83,78 +89,80 @@ const RemoveEvent = () => {
         <BotonMenuPrincipal>Ir al menu principal</BotonMenuPrincipal>
       </Link>
       <BlueBorderMenu>
-      <H1Titulo>Remove Event</H1Titulo>
+        <H1Titulo>Remove Event</H1Titulo>
 
-      {errorBack.error !== undefined ? (
-        <>
-          <ErrorMessage>{errorBack.error}</ErrorMessage>
-        </>
-      ) : (
-        <>
-          { (!data || data.length === 0) ? (
-            <>
-              <p>No hay ningun evento a partir de la fecha actual</p>
-            </>
-          ) : (
-            <>
-              {data.map((event) => {
-                return (
-                  <>
-                    <DivElementosSlot>
-                      <DivElemento>
-                        <ParrafoTitulo>Title</ParrafoTitulo>
-                        <ParrafoValores>{event.titulo}</ParrafoValores>
-                      </DivElemento>
+        {errorBack.error !== undefined ? (
+          <>
+            <ErrorMessage>{errorBack.error}</ErrorMessage>
+          </>
+        ) : (
+          <>
+            {!data || data.length === 0 ? (
+              <>
+                <p>No hay ningun evento a partir de la fecha actual</p>
+              </>
+            ) : (
+              <>
+                {data.map((event) => {
+                  return (
+                    <>
+                      <DivElementosSlot>
+                        <DivElemento>
+                          <ParrafoTitulo>Title</ParrafoTitulo>
+                          <ParrafoValores>{event.titulo}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Description</ParrafoTitulo>
-                        <ParrafoValores>{event.descripcion}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Description</ParrafoTitulo>
+                          <ParrafoValores>{event.descripcion}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Date</ParrafoTitulo>
-                        <ParrafoValores>
-                          {event.fecha.toString().substring(0, 10)}
-                        </ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Date</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.fecha.toString().substring(0, 10)}
+                          </ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Start hour</ParrafoTitulo>
-                        <ParrafoValores>{event.inicio}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Start hour</ParrafoTitulo>
+                          <ParrafoValores>{event.inicio}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>End hour</ParrafoTitulo>
-                        <ParrafoValores>{event.fin}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>End hour</ParrafoTitulo>
+                          <ParrafoValores>{event.fin}</ParrafoValores>
+                        </DivElemento>
 
-                      <DivElemento>
-                        <ParrafoTitulo>Invitados</ParrafoTitulo>
-                        <ParrafoValores>{event.invitados.toString()}</ParrafoValores>
-                      </DivElemento>
+                        <DivElemento>
+                          <ParrafoTitulo>Invitados</ParrafoTitulo>
+                          <ParrafoValores>
+                            {event.invitados.toString()}
+                          </ParrafoValores>
+                        </DivElemento>
 
-                      <BotonBorrar
-                        onClick={ async (e) => {
-                            setIdRemove(event._id)
-                            console.log("Id remove", idRemove)
+                        <BotonBorrar
+                          onClick={async () => {
+                            setIdRemove(event._id);
+                            console.log("Id remove", idRemove);
                             await removeEvent(event._id);
-                            console.log("todo bien")
+                            console.log("todo bien");
                             await allEvents();
-                        }}
-                      >
-                        <ImagenesIconos
-                          src={"/trash.png"}
-                          alt={"Esta cargando"}
-                        ></ImagenesIconos>
-                      </BotonBorrar>
-                    </DivElementosSlot>
-                  </>
-                );
-              })}
-            </>
-          )}
-        </>
-      )}
+                          }}
+                        >
+                          <ImagenesIconos
+                            src={"/trash.png"}
+                            alt={"Esta cargando"}
+                          ></ImagenesIconos>
+                        </BotonBorrar>
+                      </DivElementosSlot>
+                    </>
+                  );
+                })}
+              </>
+            )}
+          </>
+        )}
       </BlueBorderMenu>
     </>
   );
@@ -184,7 +192,7 @@ const H1Titulo = styled.h1`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const BotonMenuPrincipal = styled.div`
   border: 1px solid #2e518b; /*anchura, estilo y color borde*/
