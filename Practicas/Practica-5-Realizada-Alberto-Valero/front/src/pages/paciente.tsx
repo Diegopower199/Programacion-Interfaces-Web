@@ -1,5 +1,5 @@
-import React from "react";
 import PatientSlots from "@/Components/PatientSlots";
+import React from "react";
 
 const Page = () => {
   return (

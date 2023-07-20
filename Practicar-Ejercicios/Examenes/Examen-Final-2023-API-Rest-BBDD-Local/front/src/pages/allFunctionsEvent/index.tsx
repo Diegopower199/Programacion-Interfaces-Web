@@ -375,8 +375,6 @@ const allFunctionsEvent = () => {
         )}
       </GreenBorderMenu>
 
-      {auxDate.getDate()}
-
 
       {editIdSelected ? (
         <>
@@ -412,6 +410,7 @@ const allFunctionsEvent = () => {
                 <InputValores
                   type="date"
                   defaultValue={auxDate.toISOString().substring(0, 10)}
+                  value={auxDate.toISOString().substring(0, 10)}
                   placeholder="Date"
                   onChange={(e) => {
                     setUpdateEventDate(e.target.value);

@@ -56,6 +56,7 @@ const AddEvent = () => {
 
       if (response.ok) {
         const result = await response.json();
+        setResponseAddEvent(result)
         console.log(result);
         setErrorBack({ error: undefined });
       } else {

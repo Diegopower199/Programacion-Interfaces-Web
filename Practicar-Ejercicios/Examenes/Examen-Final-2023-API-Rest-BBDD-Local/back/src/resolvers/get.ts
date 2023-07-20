@@ -23,13 +23,14 @@ export const getEvent = async (context: GetEventContext) => {
        const id: string = context.params.id;
        console.log("id: ", id)
        if(!id){
+        console.log("Falta el id")
            context.response.status = 400;
            context.response.body = "Falta el id";
            return;
        }
-
+       console.log("SIGUIENTE LINEA ERROR")
        const evento: EventosSchema | undefined = await eventosCollection.findOne({_id: new ObjectId(id)});
-       console.log(evento)
+       console.log("La informacion del evento es: ", evento)
        if(!evento){
            context.response.status = 404;
            context.response.body = "No existe el evento";

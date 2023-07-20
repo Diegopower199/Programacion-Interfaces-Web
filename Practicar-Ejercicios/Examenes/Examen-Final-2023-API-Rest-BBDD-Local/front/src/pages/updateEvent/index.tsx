@@ -257,6 +257,7 @@ const UpdateEvent = () => {
         )}
         {auxDate.getFullYear()} {auxDate.getMonth()} {auxDate.getDate()} <br />
         {updateEventDate}
+
         {editIdSelected ? (
           <>
             <DivFormulario>
@@ -289,6 +290,7 @@ const UpdateEvent = () => {
                 <InputValores
                   type="date"
                   defaultValue={auxDate.toISOString().substring(0, 10)}
+                  value={auxDate.toISOString().substring(0, 10)}
                   placeholder="Date"
                   onChange={(e) => {
                     setUpdateEventDate(e.target.value);
