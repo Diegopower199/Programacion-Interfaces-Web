@@ -27,10 +27,11 @@ const AddEvent = () => {
   const [errorHoraInicioFinalizacion, setErrorHoraInicioFinalizacion] =
     useState<boolean>(false);
   const [errorDatos, setErrorDatos] = useState<boolean>(false);
-  const [errorBack, setErrorBack] = useState<{ error: string | undefined }>({
+  const [errorBackCreateEvent, setErrorBackCreateEvent] = useState<{ error: string | undefined }>({
     error: undefined,
   });
-
+  
+  
   
 
   const createEvent = async () => {
@@ -58,10 +59,10 @@ const AddEvent = () => {
         const result = await response.json();
         setResponseAddEvent(result)
         console.log(result);
-        setErrorBack({ error: undefined });
+        setErrorBackCreateEvent({ error: undefined });
       } else {
         const result = await response.text();
-        setErrorBack({ error: result }); // Esto es porque esta así en el back, un json con una variable que es message
+        setErrorBackCreateEvent({ error: result }); // Esto es porque esta así en el back, un json con una variable que es message
         console.log("Error", result);
       }
     } catch (error) {
@@ -230,9 +231,9 @@ const AddEvent = () => {
                 La hora de inicio es mayor o igual que la hora de finalizacion
               </ParrafoErrores>
             </>
-          ) : errorBack.error !== undefined ? (
+          ) : errorBackCreateEvent.error !== undefined ? (
             <>
-              <ParrafoErrores>{errorBack.error}</ParrafoErrores>
+              <ParrafoErrores>{errorBackCreateEvent.error}</ParrafoErrores>
             </>
           )  : (
             <>
